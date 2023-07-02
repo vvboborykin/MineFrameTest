@@ -31,7 +31,8 @@ uses
   ExportGui.BaseContextEditorUnit in 'ExportGui\ExportGui.BaseContextEditorUnit.pas' {BaseContextEditor},
   ExportGui.CsvContextEditorUnitt in 'ExportGui\ExportGui.CsvContextEditorUnitt.pas' {CsvContextEditor},
   ExportGui.CodePageContextEditorUnit in 'ExportGui\ExportGui.CodePageContextEditorUnit.pas' {CodePageContextEditor},
-  DataImport.DataSetBuilderUnit in 'DataImport\DataImport.DataSetBuilderUnit.pas';
+  DataImport.DataSetBuilderUnit in 'DataImport\DataImport.DataSetBuilderUnit.pas',
+  DataImport.ImportFormatRegistryUnit in 'DataImport\DataImport.ImportFormatRegistryUnit.pas';
 
 {$R *.res}
 
