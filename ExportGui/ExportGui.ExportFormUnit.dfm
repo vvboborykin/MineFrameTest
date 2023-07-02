@@ -2,8 +2,8 @@ object ExportForm: TExportForm
   Left = 0
   Top = 0
   Caption = #1069#1082#1089#1087#1086#1088#1090
-  ClientHeight = 323
-  ClientWidth = 498
+  ClientHeight = 322
+  ClientWidth = 494
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,23 +20,21 @@ object ExportForm: TExportForm
   object btnStart: TButton
     AlignWithMargins = True
     Left = 13
-    Top = 220
-    Width = 472
+    Top = 219
+    Width = 468
     Height = 42
     Action = actStart
     Align = alBottom
     Default = True
     ModalResult = 1
     TabOrder = 0
-    ExplicitTop = 219
-    ExplicitWidth = 468
   end
   object rgFormats: TRadioGroup
     AlignWithMargins = True
     Left = 10
     Top = 10
-    Width = 478
-    Height = 197
+    Width = 474
+    Height = 196
     Margins.Left = 0
     Margins.Top = 0
     Margins.Right = 0
@@ -44,22 +42,18 @@ object ExportForm: TExportForm
     Align = alClient
     Caption = #1042#1099#1073#1077#1088#1080#1090#1077' '#1092#1086#1088#1084#1072#1090' '#1101#1082#1089#1087#1086#1088#1090#1072' '#1076#1072#1085#1085#1099#1093
     TabOrder = 1
-    ExplicitWidth = 474
-    ExplicitHeight = 196
   end
   object btnCancel: TButton
     AlignWithMargins = True
     Left = 13
-    Top = 268
-    Width = 472
+    Top = 267
+    Width = 468
     Height = 42
     Action = actCancel
     Align = alBottom
     Cancel = True
     ModalResult = 2
     TabOrder = 2
-    ExplicitTop = 267
-    ExplicitWidth = 468
   end
   object aclMain: TActionList
     Left = 336

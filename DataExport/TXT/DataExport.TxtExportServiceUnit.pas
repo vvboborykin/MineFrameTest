@@ -116,7 +116,7 @@ end;
 
 function TTxtExportService.GetTextColumnSize(vField: TField): Integer;
 begin
-  var vTextlen := 0;
+  var vTextlen: Integer;
   if vField is TFloatField then
     vTextlen := 25
   else

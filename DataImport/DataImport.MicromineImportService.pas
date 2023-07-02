@@ -433,8 +433,8 @@ begin
 
   var vBuffer: TBytes := nil;
   SetLength(vBuffer, vRowSize);
-  var vByte: Byte := 0;
-  var vReadLen: LongInt := 0;
+  var vReadLen: LongInt;
+
   repeat
     ImportContext.CheckCancel;
 
@@ -453,8 +453,8 @@ function TMicromineImportService.ReadSection(vFileStream: TBufferedFileStream;
   AEndMarker: TBytes): TBytes;
 begin
   Result := nil;
-  var vReadLen: LongInt := 0;
-  var vByte: Byte := 0;
+  var vReadLen: LongInt;
+  var vByte: Byte;
   repeat
     vReadLen := vFileStream.ReadData(vByte);
     Result := Result + [vByte];

@@ -142,6 +142,7 @@
             <Form>CodePageContextEditor</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="DataImport\DataImport.DataSetBuilderUnit.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

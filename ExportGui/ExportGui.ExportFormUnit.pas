@@ -4,8 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB,
-  System.Actions, Vcl.ActnList, Vcl.StdCtrls, Vcl.ExtCtrls,
+  System.UITypes, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Data.DB, System.Actions, Vcl.ActnList, Vcl.StdCtrls, Vcl.ExtCtrls,
   DataExport.ExportContextUnit;
 
 type
@@ -25,7 +25,8 @@ type
     procedure FillFormatsRadioGroup;
     procedure SelectDefaultFormat;
     procedure DoExport;
-    function GetSelectedExportContext(out AExportContext: TExportContext): Boolean;
+    function GetSelectedExportContext(out AExportContext: TExportContext):
+      Boolean;
     function SelectExportFileName(AExportContext: TExportContext): Boolean;
   public
     /// <summary>TExportForm.ExportDataFromDataSet
@@ -45,7 +46,6 @@ uses
 
 resourcestring
   SExportCompletedSuccessfully = 'Экспорт данных успашно завершен';
-
 
 procedure TExportForm.actCancelExecute(Sender: TObject);
 begin
@@ -99,27 +99,26 @@ begin
     vExportContext.DataSet := FDataSet;
     if SelectExportFileName(vExportContext) then
     begin
-      var vExportService := TDataSetExportServiceFactory
-        .CreateExportService(vExportContext);
+      var vExportService := TDataSetExportServiceFactory.CreateExportService(vExportContext);
       try
         vExportService.ExportDataSetToFile();
         ShowMessage(SExportCompletedSuccessfully);
       except
         on E: Exception do
-          MessageDlg(Format('Ошибка при экспорте %s', [E.Message]),
-            TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
+          MessageDlg(Format('Ошибка при экспорте %s', [E.Message]), TMsgDlgType.mtError,
+            [TMsgDlgBtn.mbOK], 0);
       end;
     end;
   end;
 end;
 
-function TExportForm.GetSelectedExportContext(out AExportContext:
-    TExportContext): Boolean;
+function TExportForm.GetSelectedExportContext(out AExportContext: TExportContext):
+  Boolean;
 begin
   var vSelectedFormat := TExportFormat(rgFormats.Items.Objects[rgFormats.ItemIndex]);
   var vContextClass := vSelectedFormat.ContextClass;
   var vEditorClass: TBaseContextEditorClass;
-  var vExportContext: TExportContext := nil;
+  var vExportContext: TExportContext;
 
   if ExportContextFormRegistry.TryGetValue(vContextClass, vEditorClass) then
   begin
@@ -135,7 +134,7 @@ begin
 end;
 
 function TExportForm.SelectExportFileName(AExportContext: TExportContext):
-    Boolean;
+  Boolean;
 begin
   var vSaveDialog := TSaveDialog.Create(Self);
   try

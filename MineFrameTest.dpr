@@ -30,7 +30,8 @@ uses
   ExportGui.ExportContextFormRegistryUnit in 'ExportGui\ExportGui.ExportContextFormRegistryUnit.pas',
   ExportGui.BaseContextEditorUnit in 'ExportGui\ExportGui.BaseContextEditorUnit.pas' {BaseContextEditor},
   ExportGui.CsvContextEditorUnitt in 'ExportGui\ExportGui.CsvContextEditorUnitt.pas' {CsvContextEditor},
-  ExportGui.CodePageContextEditorUnit in 'ExportGui\ExportGui.CodePageContextEditorUnit.pas' {CodePageContextEditor};
+  ExportGui.CodePageContextEditorUnit in 'ExportGui\ExportGui.CodePageContextEditorUnit.pas' {CodePageContextEditor},
+  DataImport.DataSetBuilderUnit in 'DataImport\DataImport.DataSetBuilderUnit.pas';
 
 {$R *.res}
 

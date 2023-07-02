@@ -45,20 +45,13 @@ type
   strict private
     FLoadBtnCaption: string;
     FLogger: ILogger;
-    FTask: ITask;
-    procedure AppendRecordsToTable(AImportService: TMicromineImportService);
-    procedure CreateDataFieldDefs(AImportService: TMicromineImportService);
-    function GetFieldSizeOfColumn(vCurrentColumn: TColumn): Integer;
-    function GetFieldTypeOfColumn(vCurrentColumn: TColumn): TFieldType;
+    FImportTask: ITask;
     procedure ShowPercent(APercent: Double); stdcall;
     procedure ShowText(ATemplate: string; AParams: array of const); stdcall;
     procedure LogString(Sender: TObject; ALogText: string);
     procedure LoadFromMicromineFile(vFileName: TFileName);
     function SelectMicromineFile(out vFileName: TFileName): Boolean;
-    procedure SetFieldDisplayNames(AImportService: TMicromineImportService);
-    procedure StartBackgroundImportTask(vFileName: TFileName);
-    procedure WaitForImportCancellation;
-  private
+    procedure StartBackgroundImportTask(AFileName: TFileName);
     procedure LoadImportResultsToTable(AImportService: TMicromineImportService);
   public
     property Logger: ILogger read FLogger implements ILogger;
@@ -72,18 +65,18 @@ implementation
 uses
   Log.DelegatedLoggerUnit, DataExport.ExportServiceFactoryUnit,
   DataExport.ExportContextUnit, DataExport.CsvExportContextUnit,
-  ExportGui.ExportFormUnit;
-
-const
-  CStrFileExt = '.STR';
-  CStrFileOpenDialogFilter = '*' + CStrFileExt + '|*' + CStrFileExt;
+  ExportGui.ExportFormUnit, DataImport.DataSetBuilderUnit;
 
 resourcestring
-  SExportCompletedSuccessfully = 'Экспорт данных успашно завершен';
   SLoadAbortedByUser = 'Загрузка прервана пользователем';
   SCancelLoad = 'Прервать загрузку';
   SLoadInProgress = 'Идет загрузка данных. Чтобы выйти из программы прервите ее';
-    {$R *.dfm}
+
+const
+  CStrFileExt = '.STR';
+  CStrFileOpenDialogFilter = '*' + CStrFileExt + '|' + '*' + CStrFileExt;
+
+{$R *.dfm}
 
 procedure TMainForm.actExportToFileExecute(Sender: TObject);
 begin
@@ -102,8 +95,8 @@ procedure TMainForm.actSelectFileAndLoadExecute(Sender: TObject);
 var
   vFileName: TFileName;
 begin
-  if FTask <> nil then
-    FTask.Cancel
+  if FImportTask <> nil then
+    FImportTask.Cancel
   else
   begin
     if SelectMicromineFile(vFileName) then
@@ -111,57 +104,12 @@ begin
   end;
 end;
 
-procedure TMainForm.AppendRecordsToTable(AImportService: TMicromineImportService);
-begin
-  for var vCurrentRow in AImportService.Rows do
-  begin
-    cdsImportResults.Append;
-    for var vItem in vCurrentRow do
-    begin
-      cdsImportResults[vItem.Column.Name] := vItem.Value;
-    end;
-    cdsImportResults.Post;
-  end;
-end;
-
-procedure TMainForm.CreateDataFieldDefs(AImportService: TMicromineImportService);
-begin
-  for var vCurrentColumn in AImportService.Columns do
-  begin
-    cdsImportResults.FieldDefs.Add(vCurrentColumn.Name, GetFieldTypeOfColumn(vCurrentColumn),
-      GetFieldSizeOfColumn(vCurrentColumn));
-    var vDef := cdsImportResults.FieldDefs[cdsImportResults.FieldDefs.Count - 1];
-    if vCurrentColumn.DataType = cdtDouble then
-      vDef.Precision := vCurrentColumn.Precision;
-  end;
-end;
-
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  // при активной задаче загрузке попросим прервать ее явно
-  CanClose := FTask = nil;
+  // при активной задаче загрузки попросим прервать ее явно
+  CanClose := FImportTask = nil;
   if not CanClose then
     ShowMessage(SLoadInProgress);
-end;
-
-function TMainForm.GetFieldSizeOfColumn(vCurrentColumn: TColumn): Integer;
-begin
-  Result := 0;
-  if vCurrentColumn.DataType = cdtString then
-    Result := vCurrentColumn.Len;
-end;
-
-function TMainForm.GetFieldTypeOfColumn(vCurrentColumn: TColumn): TFieldType;
-begin
-  Result := ftString;
-  case vCurrentColumn.DataType of
-    cdtDouble:
-      Result := ftFloat;
-    cdtNatural:
-      Result := ftInteger;
-    cdtString:
-      Result := ftString;
-  end;
 end;
 
 procedure TMainForm.LoadFromMicromineFile(vFileName: TFileName);
@@ -173,12 +121,12 @@ end;
 procedure TMainForm.LoadImportResultsToTable(AImportService:
   TMicromineImportService);
 begin
-  cdsImportResults.Close;
-  cdsImportResults.FieldDefs.Clear;
-  CreateDataFieldDefs(AImportService);
-  cdsImportResults.CreateDataSet;
-  SetFieldDisplayNames(AImportService);
-  AppendRecordsToTable(AImportService);
+  var vBuilder := TDataSetBuilder.Create(AImportService, cdsImportResults);
+  try
+    vBuilder.BuildDataSetFromImportServiceResults;
+  finally
+    vBuilder.Free;
+  end;
 end;
 
 procedure TMainForm.LogString(Sender: TObject; ALogText: string);
@@ -197,17 +145,6 @@ begin
     vOpenDialog.Free;
   end;
   Result := vFileName <> '';
-end;
-
-procedure TMainForm.SetFieldDisplayNames(AImportService: TMicromineImportService);
-begin
-  for var I := 0 to cdsImportResults.FieldCount - 1 do
-  begin
-    var vColumn := AImportService.Columns[I];
-    var vDisplayName := VarToStr(vColumn.DisplayName);
-    if (vDisplayName <> '') then
-      cdsImportResults.Fields[I].DisplayLabel := vDisplayName;
-  end;
 end;
 
 procedure TMainForm.ShowPercent(APercent: Double);
@@ -232,19 +169,19 @@ begin
     end);
 end;
 
-procedure TMainForm.StartBackgroundImportTask(vFileName: TFileName);
+procedure TMainForm.StartBackgroundImportTask(AFileName: TFileName);
 begin
   // контекст выполнения задачи - журнал, индикатор прогресса
   var vContext := TImportContext.Create(Self, Self, nil);
 
   // создаем задачу для выполнения, но пока не запускаем
-  FTask := TTask.Create(
+  FImportTask := TTask.Create(
     procedure
     begin
       var vImportService := TMicromineImportService.Create(vContext);
       try
         try
-          vImportService.ImportFromFile(vFileName);
+          vImportService.ImportFromFile(AFileName);
         except
           on E: Exception do
           begin
@@ -259,7 +196,7 @@ begin
         TThread.Synchronize(nil,
           procedure
           begin
-            FTask := nil;
+            FImportTask := nil;
             LoadImportResultsToTable(vImportService);
             actSelectFileAndLoad.Caption := FLoadBtnCaption;
           end);
@@ -270,22 +207,12 @@ begin
     end);
 
   // ссылку на задачу поместим в контекст, чтобы служба импорта могла проверять
-  // запросы на прерывание загрузки от пользователя
-  vContext.Task := FTask;
+  // запросы пользователя на прерывание процесса загрузки
+  vContext.Task := FImportTask;
 
   actSelectFileAndLoad.Caption := SCancelLoad;
   // стартуем загрузку в фоновой задаче
-  FTask.ExecuteWork();
-end;
-
-procedure TMainForm.WaitForImportCancellation;
-begin
-  while FTask <> nil do
-  begin
-    FTask.Cancel;
-    Application.ProcessMessages;
-    Sleep(100);
-  end;
+  FImportTask.ExecuteWork();
 end;
 
 end.

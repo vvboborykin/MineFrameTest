@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils,
-  System.IOUtils, DataExport.ExportContextUnit;
+  System.IOUtils, DataExport.ExportContextUnit, Data.DB;
 
 type
   /// <summary>IExportService
