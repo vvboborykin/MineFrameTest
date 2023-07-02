@@ -48,14 +48,12 @@ type
     FTask: ITask;
     procedure AppendRecordsToTable(AImportService: TMicromineImportService);
     procedure CreateDataFieldDefs(AImportService: TMicromineImportService);
-    procedure ExportToFile(vFileName: string);
     function GetFieldSizeOfColumn(vCurrentColumn: TColumn): Integer;
     function GetFieldTypeOfColumn(vCurrentColumn: TColumn): TFieldType;
     procedure ShowPercent(APercent: Double); stdcall;
     procedure ShowText(ATemplate: string; AParams: array of const); stdcall;
     procedure LogString(Sender: TObject; ALogText: string);
     procedure LoadFromMicromineFile(vFileName: TFileName);
-    function SelectExportFile: string;
     function SelectMicromineFile(out vFileName: TFileName): Boolean;
     procedure SetFieldDisplayNames(AImportService: TMicromineImportService);
     procedure StartBackgroundImportTask(vFileName: TFileName);
@@ -73,13 +71,15 @@ implementation
 
 uses
   Log.DelegatedLoggerUnit, DataExport.ExportServiceFactoryUnit,
-  DataExport.ExportContextUnit, DataExport.CsvExportContextUnit;
+  DataExport.ExportContextUnit, DataExport.CsvExportContextUnit,
+  ExportGui.ExportFormUnit;
 
 const
   CStrFileExt = '.STR';
   CStrFileOpenDialogFilter = '*' + CStrFileExt + '|*' + CStrFileExt;
 
 resourcestring
+  SExportCompletedSuccessfully = 'Экспорт данных успашно завершен';
   SLoadAbortedByUser = 'Загрузка прервана пользователем';
   SCancelLoad = 'Прервать загрузку';
   SLoadInProgress = 'Идет загрузка данных. Чтобы выйти из программы прервите ее';
@@ -87,15 +87,15 @@ resourcestring
 
 procedure TMainForm.actExportToFileExecute(Sender: TObject);
 begin
-  var vFileName := SelectExportFile();
-  if vFileName <> '' then
-    ExportToFile(vFileName);
+  if TExportForm.ExportDataFromDataSet(cdsImportResults) then
+
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   FLogger := TDelegatedLogger.Create(lolInfo, nil, Self.LogString);
   FLoadBtnCaption := actSelectFileAndLoad.Caption;
+  pgcClient.ActivePageIndex := 0;
 end;
 
 procedure TMainForm.actSelectFileAndLoadExecute(Sender: TObject);
@@ -133,32 +133,6 @@ begin
     var vDef := cdsImportResults.FieldDefs[cdsImportResults.FieldDefs.Count - 1];
     if vCurrentColumn.DataType = cdtDouble then
       vDef.Precision := vCurrentColumn.Precision;
-  end;
-end;
-
-procedure TMainForm.ExportToFile(vFileName: string);
-begin
-  var vContext: TExportContext := nil;
-  if AnsiSameText(ExtractFileExt(vFileName), '.csv') then
-  begin
-    vContext := TCsvExportContext.Create();
-  end;
-  if vContext <> nil then
-  begin
-    try
-      vContext.DataSet := cdsImportResults;
-      vContext.FileName := vFileName;
-      with TDataSetExportServiceFactory.CreateExportService(vContext) do
-      begin
-        try
-          ExportDataSetToFile();
-        finally
-          Free;
-        end;
-      end;
-    finally
-      vContext.Free;
-    end;
   end;
 end;
 
@@ -210,19 +184,6 @@ end;
 procedure TMainForm.LogString(Sender: TObject; ALogText: string);
 begin
   ShowText(ALogText, []);
-end;
-
-function TMainForm.SelectExportFile: string;
-begin
-  Result := '';
-  var vSaveDialog := TSaveDialog.Create(Self);
-  try
-    vSaveDialog.Filter := '*.CSV|*.CSV|*.TXT|*.TXT';
-    if vSaveDialog.Execute then
-      Result := vSaveDialog.FileName;
-  finally
-    vSaveDialog.Free;
-  end;
 end;
 
 function TMainForm.SelectMicromineFile(out vFileName: TFileName): Boolean;

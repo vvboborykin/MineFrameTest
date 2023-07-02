@@ -25,7 +25,8 @@ type
     FFileName: string;
     FCodePage: Integer;
   public
-    constructor Create;
+    constructor Create; virtual;
+    class function FileExtension: String; virtual; abstract;
     /// <summary>TExportContext.DataSet
     /// Данные для экспорта
     /// </summary>

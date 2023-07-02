@@ -26,7 +26,8 @@ type
     procedure SetDelimiterChar(const Value: Char);
     procedure SetQuoteString(const Value: Boolean);
   public
-    constructor Create;
+    constructor Create; override;
+    class function FileExtension: String; override;
     /// <summary>TCsvExportContext.DelimiterChar
     /// Разделитель данных CSV файла (по умолчанию символ табуляции #9)
     /// </summary>
@@ -48,6 +49,11 @@ constructor TCsvExportContext.Create;
 begin
   inherited Create;
   FDelimiterChar := CDefaultDelimiter;
+end;
+
+class function TCsvExportContext.FileExtension: String;
+begin
+  Result := '.CSV';
 end;
 
 procedure TCsvExportContext.SetDelimiterChar(const Value: Char);

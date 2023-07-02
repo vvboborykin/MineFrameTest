@@ -25,12 +25,12 @@ type
     lblCodePage: TLabel;
   private
   strict protected
-    /// <summary>TCodePageContextEditor.GetSelectedEncoding
+    /// <summary>TCodePageContextEditor.GetSelectedCodePage
     /// Получить выбранную кодовую страницу
     /// </summary>
     /// <returns> Integer
     /// </returns>
-    function GetSelectedEncoding: Integer;
+    function GetSelectedCodePage: Integer;
     procedure SetCodePage(ACodePage: Integer);
   public
   end;
@@ -39,7 +39,7 @@ implementation
 
 {$R *.dfm}
 
-function TCodePageContextEditor.GetSelectedEncoding: Integer;
+function TCodePageContextEditor.GetSelectedCodePage: Integer;
 begin
   var vParts := cbbCodePage.Items[cbbCodePage.ItemIndex].Split([' ']);
   Result := vParts[0].ToInteger();

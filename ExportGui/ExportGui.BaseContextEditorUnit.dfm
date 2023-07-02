@@ -17,17 +17,40 @@ object BaseContextEditor: TBaseContextEditor
   Position = poScreenCenter
   TextHeight = 21
   object btnStart: TButton
+    AlignWithMargins = True
     Left = 10
-    Top = 259
+    Top = 207
     Width = 489
     Height = 42
+    Margins.Left = 0
+    Margins.Top = 10
+    Margins.Right = 0
+    Margins.Bottom = 0
     Action = actStart
     Align = alBottom
     Default = True
     ModalResult = 1
     TabOrder = 0
-    ExplicitTop = 216
-    ExplicitWidth = 604
+    ExplicitTop = 258
+    ExplicitWidth = 485
+  end
+  object btnCancel: TButton
+    AlignWithMargins = True
+    Left = 10
+    Top = 259
+    Width = 489
+    Height = 42
+    Margins.Left = 0
+    Margins.Top = 10
+    Margins.Right = 0
+    Margins.Bottom = 0
+    Action = actCancel
+    Align = alBottom
+    Default = True
+    ModalResult = 2
+    TabOrder = 1
+    ExplicitLeft = 7
+    ExplicitTop = 256
   end
   object aclMain: TActionList
     Left = 368
@@ -35,6 +58,10 @@ object BaseContextEditor: TBaseContextEditor
     object actStart: TAction
       Caption = #1055#1088#1086#1076#1086#1083#1078#1080#1090#1100
       OnExecute = actStartExecute
+    end
+    object actCancel: TAction
+      Caption = #1054#1090#1084#1077#1085#1072
+      OnExecute = actCancelExecute
     end
   end
 end

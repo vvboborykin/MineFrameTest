@@ -46,10 +46,11 @@ type
   /// </summary>
   TBaseExportService<T: TExportContext> = class abstract(TExportService)
   strict private
-    FContext: T;
-    procedure SetContext(const Value: T);
+  private
+    function GetContext: T;
   strict protected
-    function GetHeader: string; virtual; abstract;
+    function GetFooter: TArray<string>; virtual;
+    function GetHeader: TArray<string>; virtual; abstract;
     function GetRecordLine: string; virtual; abstract;
   public
     constructor Create(AContext: T);
@@ -61,7 +62,7 @@ type
     /// Типизированный контекст экспорта
     /// </summary>
     /// type:T
-    property Context: T read FContext write SetContext;
+    property Context: T read GetContext;
   end;
 
 implementation
@@ -77,18 +78,19 @@ begin
   if vDataSet.IsEmpty then
     Exit;
 
-  var vLines: TArray<string>;
+  var vLines: TArray<string> := nil;
 
   var vRecNo := vDataSet.RecNo;
   vDataSet.DisableControls;
   try
-    vLines := vLines + [GetHeader()];
+    vLines := vLines + GetHeader();
     vDataSet.First;
     while not vDataSet.Eof do
     begin
       vLines := vLines + [GetRecordLine()];
       vDataSet.Next;
     end;
+    vLines := vLines + GetFooter();
     TFile.WriteAllLines(Context.FileName, vLines, TEncoding.GetEncoding(Context.CodePage));
   finally
     vDataSet.RecNo := vRecNo;
@@ -96,9 +98,14 @@ begin
   end;
 end;
 
-procedure TBaseExportService<T>.SetContext(const Value: T);
+function TBaseExportService<T>.GetContext: T;
 begin
-  FContext := Value;
+  Result := ExportContext as T;
+end;
+
+function TBaseExportService<T>.GetFooter: TArray<string>;
+begin
+  Result := [];
 end;
 
 constructor TExportService.Create(AContext: TExportContext);

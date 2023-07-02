@@ -24,7 +24,8 @@ type
     FDelimiterChar: Char;
     procedure SetDelimiterChar(const Value: Char);
   public
-    constructor Create;
+    constructor Create; override;
+    class function FileExtension: String; override;
     /// <summary>TTxtExportContext.DelimiterChar
     /// Разделитель данных CSV файла (по умолчанию символ табуляции #9)
     /// </summary>
@@ -34,10 +35,19 @@ type
 
 implementation
 
+const
+  CDefaultDelimiter = '|';
+
+
 constructor TTxtExportContext.Create;
 begin
   inherited Create;
-  FDelimiterChar := '|';
+  FDelimiterChar := CDefaultDelimiter;
+end;
+
+class function TTxtExportContext.FileExtension: String;
+begin
+  Result := '.TXT';
 end;
 
 procedure TTxtExportContext.SetDelimiterChar(const Value: Char);

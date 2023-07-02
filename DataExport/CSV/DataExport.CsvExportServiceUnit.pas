@@ -23,7 +23,7 @@ type
   private
     function BuildCsvLine(AFunc: TFunc<TField, string>): string;
   protected
-    function GetHeader: string; override;
+    function GetHeader: TArray<string>; override;
     function GetRecordLine: string; override;
   public
   end;
@@ -60,13 +60,13 @@ begin
   Result := ''.Join(Context.DelimiterChar, vLineItems);
 end;
 
-function TCsvExportService.GetHeader: string;
+function TCsvExportService.GetHeader: TArray<string>;
 begin
-  Result := BuildCsvLine(
+  Result := [BuildCsvLine(
     function(AField: TField): string
     begin
-      Result := AField.DisplayLabel
-    end);
+      Result := AField.DisplayLabel;
+    end)];
 end;
 
 function TCsvExportService.GetRecordLine: string;

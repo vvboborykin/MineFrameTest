@@ -16,8 +16,8 @@ inherited CodePageContextEditor: TCodePageContextEditor
     ExplicitWidth = 322
   end
   inherited btnStart: TButton
-    ExplicitTop = 259
-    ExplicitWidth = 489
+    ExplicitTop = 214
+    ExplicitWidth = 483
   end
   object cbbCodePage: TComboBox [2]
     AlignWithMargins = True
@@ -233,11 +233,9 @@ inherited CodePageContextEditor: TCodePageContextEditor
       '57010 ISCII Gujarati'
       '57011 ISCII Punjabi'
       '65000 Unicode (UTF-7)')
-    ExplicitTop = 41
+    ExplicitWidth = 485
   end
-  inherited aclMain: TActionList
-    inherited actStart: TAction
-      OnUpdate = nil
-    end
+  inherited btnCancel: TButton
+    TabOrder = 2
   end
 end

@@ -118,11 +118,11 @@
         <DCCReference Include="DataConverters\DataConverters.StringDataConverterUnit.pas"/>
         <DCCReference Include="Log\Log.DelegatedLoggerUnit.pas"/>
         <DCCReference Include="DataExport\DataExport.ExportServiceFactoryUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.CsvExportServiceUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.CsvExportContextUnit.pas"/>
+        <DCCReference Include="DataExport\CSV\DataExport.CsvExportServiceUnit.pas"/>
+        <DCCReference Include="DataExport\CSV\DataExport.CsvExportContextUnit.pas"/>
         <DCCReference Include="DataExport\DataExport.ExportContextUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.TxtExportServiceUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.TxtExportContextUnit.pas"/>
+        <DCCReference Include="DataExport\TXT\DataExport.TxtExportServiceUnit.pas"/>
+        <DCCReference Include="DataExport\TXT\DataExport.TxtExportContextUnit.pas"/>
         <DCCReference Include="DataExport\DataExport.BaseExportServiceUnit.pas"/>
         <DCCReference Include="ExportGui\ExportGui.ExportFormUnit.pas">
             <Form>ExportForm</Form>
