@@ -120,8 +120,7 @@ object MainForm: TMainForm
         Action = actExportToFile
         Align = alTop
         TabOrder = 2
-        ExplicitLeft = 0
-        ExplicitWidth = 914
+        ExplicitWidth = 890
       end
     end
   end

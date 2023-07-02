@@ -6,14 +6,15 @@
 * Created: 01.07.2023 18:26:44
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit MicromineImportService;
+unit DataImport.MicromineImportService;
 
 interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils,
   System.Threading, System.IOUtils, Generics.Collections, System.Math,
-  ColumnUnit, RowUnit, Progress.IProgressUnit, Log.ILoggerUnit;
+  DataImport.ColumnUnit, DataImport.RowUnit, Progress.IProgressUnit,
+  Log.ILoggerUnit;
 
 type
   /// <summary>TImportContext
@@ -348,16 +349,15 @@ begin
   vColumn.DataType := TColumnDataType(AnsiIndexStr(vColumnStr[CDataTypeIndex],
     CColumnDataTypeChars));
 
-  vColumn.Len := vColumnStr.Substring(CDataTypeIndex, CColumnDataLenSize)
-    .Trim().ToInteger();
+  vColumn.Len := vColumnStr.Substring(CDataTypeIndex, CColumnDataLenSize).Trim().ToInteger
+    ();
 
-  vColumn.Precision := vColumnStr
-    .Substring(CDataTypeIndex + CColumnDataLenSize, CColumnPrecisionSize)
-    .Trim().ToInteger();
+  vColumn.Precision := vColumnStr.Substring(CDataTypeIndex + CColumnDataLenSize,
+    CColumnPrecisionSize).Trim().ToInteger();
 
   if vColumnStr.Contains(CColumnDisplayNameSeparator) then
-    vColumn.DisplayName := vColumnStr.Substring(vColumnStr
-      .IndexOf(CColumnDisplayNameSeparator) + 1).Trim();
+    vColumn.DisplayName := vColumnStr.Substring(vColumnStr.IndexOf(CColumnDisplayNameSeparator)
+      + 1).Trim();
 end;
 
 procedure TMicromineImportService.ReadColumns(vFileStream: TBufferedFileStream);

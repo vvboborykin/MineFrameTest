@@ -6,13 +6,13 @@
 * Created: 01.07.2023 19:13:05
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit RowUnit;
+unit DataImport.RowUnit;
 
 interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils,
-  System.IOUtils, Generics.Collections, System.Math, ColumnUnit;
+  System.IOUtils, Generics.Collections, System.Math, DataImport.ColumnUnit;
 
 type
   /// <summary>TRowItem

@@ -13,7 +13,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils,
-  System.IOUtils, Generics.Collections, System.Math, ColumnUnit, RowUnit;
+  System.IOUtils, Generics.Collections, System.Math, DataImport.ColumnUnit,
+  DataImport.RowUnit;
 
 type
   /// <summary>TDataConverterContext

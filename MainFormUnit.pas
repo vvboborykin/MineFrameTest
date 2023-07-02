@@ -15,8 +15,8 @@ uses
   System.Threading, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, System.Actions, Vcl.ActnList, Vcl.StdCtrls,
   Progress.IProgressUnit, Log.ILoggerUnit, System.ImageList, Vcl.ImgList,
-  Vcl.ComCtrls, MicromineImportService, Data.DB, Vcl.ExtCtrls, Vcl.DBCtrls,
-  Vcl.Grids, Vcl.DBGrids, Datasnap.DBClient, ColumnUnit;
+  Vcl.ComCtrls, DataImport.MicromineImportService, Data.DB, Vcl.ExtCtrls,
+  Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Datasnap.DBClient, DataImport.ColumnUnit;
 
 type
   /// <summary>TMainForm
@@ -48,14 +48,14 @@ type
     FTask: ITask;
     procedure AppendRecordsToTable(AImportService: TMicromineImportService);
     procedure CreateDataFieldDefs(AImportService: TMicromineImportService);
-    procedure ExportToFile(vFileName: String);
+    procedure ExportToFile(vFileName: string);
     function GetFieldSizeOfColumn(vCurrentColumn: TColumn): Integer;
     function GetFieldTypeOfColumn(vCurrentColumn: TColumn): TFieldType;
     procedure ShowPercent(APercent: Double); stdcall;
     procedure ShowText(ATemplate: string; AParams: array of const); stdcall;
     procedure LogString(Sender: TObject; ALogText: string);
     procedure LoadFromMicromineFile(vFileName: TFileName);
-    function SelectExportFile: String;
+    function SelectExportFile: string;
     function SelectMicromineFile(out vFileName: TFileName): Boolean;
     procedure SetFieldDisplayNames(AImportService: TMicromineImportService);
     procedure StartBackgroundImportTask(vFileName: TFileName);
@@ -83,8 +83,7 @@ resourcestring
   SLoadAbortedByUser = 'Загрузка прервана пользователем';
   SCancelLoad = 'Прервать загрузку';
   SLoadInProgress = 'Идет загрузка данных. Чтобы выйти из программы прервите ее';
-
-{$R *.dfm}
+    {$R *.dfm}
 
 procedure TMainForm.actExportToFileExecute(Sender: TObject);
 begin
@@ -112,8 +111,7 @@ begin
   end;
 end;
 
-procedure TMainForm.AppendRecordsToTable(AImportService:
-    TMicromineImportService);
+procedure TMainForm.AppendRecordsToTable(AImportService: TMicromineImportService);
 begin
   for var vCurrentRow in AImportService.Rows do
   begin
@@ -126,21 +124,19 @@ begin
   end;
 end;
 
-procedure TMainForm.CreateDataFieldDefs(AImportService:
-    TMicromineImportService);
+procedure TMainForm.CreateDataFieldDefs(AImportService: TMicromineImportService);
 begin
   for var vCurrentColumn in AImportService.Columns do
   begin
-    cdsImportResults.FieldDefs.Add(vCurrentColumn.Name,
-      GetFieldTypeOfColumn(vCurrentColumn),
+    cdsImportResults.FieldDefs.Add(vCurrentColumn.Name, GetFieldTypeOfColumn(vCurrentColumn),
       GetFieldSizeOfColumn(vCurrentColumn));
-    var vDef := cdsImportResults.FieldDefs[cdsImportResults.FieldDefs.Count-1];
+    var vDef := cdsImportResults.FieldDefs[cdsImportResults.FieldDefs.Count - 1];
     if vCurrentColumn.DataType = cdtDouble then
       vDef.Precision := vCurrentColumn.Precision;
   end;
 end;
 
-procedure TMainForm.ExportToFile(vFileName: String);
+procedure TMainForm.ExportToFile(vFileName: string);
 begin
   var vContext: TExportContext := nil;
   if AnsiSameText(ExtractFileExt(vFileName), '.csv') then
@@ -185,9 +181,12 @@ function TMainForm.GetFieldTypeOfColumn(vCurrentColumn: TColumn): TFieldType;
 begin
   Result := ftString;
   case vCurrentColumn.DataType of
-    cdtDouble: Result := ftFloat;
-    cdtNatural: Result := ftInteger;
-    cdtString: Result := ftString;
+    cdtDouble:
+      Result := ftFloat;
+    cdtNatural:
+      Result := ftInteger;
+    cdtString:
+      Result := ftString;
   end;
 end;
 
@@ -198,7 +197,7 @@ begin
 end;
 
 procedure TMainForm.LoadImportResultsToTable(AImportService:
-    TMicromineImportService);
+  TMicromineImportService);
 begin
   cdsImportResults.Close;
   cdsImportResults.FieldDefs.Clear;
@@ -213,7 +212,7 @@ begin
   ShowText(ALogText, []);
 end;
 
-function TMainForm.SelectExportFile: String;
+function TMainForm.SelectExportFile: string;
 begin
   Result := '';
   var vSaveDialog := TSaveDialog.Create(Self);
@@ -239,10 +238,9 @@ begin
   Result := vFileName <> '';
 end;
 
-procedure TMainForm.SetFieldDisplayNames(AImportService:
-    TMicromineImportService);
+procedure TMainForm.SetFieldDisplayNames(AImportService: TMicromineImportService);
 begin
-  for var I := 0 to cdsImportResults.FieldCount-1 do
+  for var I := 0 to cdsImportResults.FieldCount - 1 do
   begin
     var vColumn := AImportService.Columns[I];
     var vDisplayName := VarToStr(vColumn.DisplayName);
@@ -298,12 +296,12 @@ begin
       finally
         // задача завершена или прервана, обнулим ссылку на нее в форме
         TThread.Synchronize(nil,
-        procedure
-        begin
-          FTask := nil;
-          LoadImportResultsToTable(vImportService);
-          actSelectFileAndLoad.Caption := FLoadBtnCaption;
-        end);
+          procedure
+          begin
+            FTask := nil;
+            LoadImportResultsToTable(vImportService);
+            actSelectFileAndLoad.Caption := FLoadBtnCaption;
+          end);
 
         vImportService.Free;
         vContext.Free;

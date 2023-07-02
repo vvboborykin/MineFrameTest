@@ -6,7 +6,7 @@
 * Created: 01.07.2023 19:13:26
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit ColumnUnit;
+unit DataImport.ColumnUnit;
 
 interface
 

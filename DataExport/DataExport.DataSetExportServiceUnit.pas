@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils, System.IOUtils, Data.DB,
-  MicromineImportService, ColumnUnit, RowUnit, DataExport.ExportContextUnit;
+  DataImport.MicromineImportService, DataImport.ColumnUnit, DataImport.RowUnit,
+  DataExport.ExportContextUnit;
 
 type
   TDataSetExportService = class abstract
