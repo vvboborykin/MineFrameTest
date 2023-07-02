@@ -1,0 +1,106 @@
+unit BaseLoggerUnit;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Variants, System.StrUtils,
+  ILoggerUnit;
+
+type
+  TLogRecordFormatFunc = reference to function (ALevel: TLogLevel; ATemplate: string; AParams: array of
+        const): String;
+
+  TBaseLogger = class abstract(TInterfacedObject, ILogger)
+  strict private
+    FSeverity: TLogLevel;
+    procedure LogDebug(ATemplate: string; AParams: array of const); stdcall;
+    procedure LogError(ATemplate: string; AParams: array of const); stdcall;
+    procedure LogInfo(ATemplate: string; AParams: array of const); stdcall;
+    procedure LogString(ALevel: TLogLevel; ATemplate: string; AParams: array of
+        const); stdcall;
+    procedure LogWarning(ATemplate: string; AParams: array of const); stdcall;
+    procedure SetSeverity(const Value: TLogLevel);
+  strict protected
+    FFormatFunc: TLogRecordFormatFunc;
+    procedure AddLogString(AText: string); virtual; abstract;
+    function FormatLogRecord(ALevel: TLogLevel; ATemplate: string; AParams: array
+        of const): String; virtual;
+  public
+    constructor Create(ASeverity: TLogLevel; AFormatFunc: TLogRecordFormatFunc);
+    class function GetLogLevelName(ALevel: TLogLevel): string;
+    property Severity: TLogLevel read FSeverity write SetSeverity;
+  end;
+
+implementation
+
+resourcestring
+  SDebugLogLevelName = 'Отладка';
+  SInfoLogLevelName = 'Информация';
+  SWarningLogLevelName = 'Предупреждение';
+  SErrorLogLevelName = 'ОШИБКА';
+
+const
+  CLogLevelNames: array [Low(TLogLevel) .. High(TLogLevel)] of string =
+    (SDebugLogLevelName, SInfoLogLevelName, SWarningLogLevelName, SErrorLogLevelName);
+
+constructor TBaseLogger.Create(ASeverity: TLogLevel; AFormatFunc:
+    TLogRecordFormatFunc);
+begin
+  inherited Create;
+  FSeverity := ASeverity;
+  FFormatFunc := AFormatFunc;
+end;
+
+function TBaseLogger.FormatLogRecord(ALevel: TLogLevel; ATemplate: string;
+    AParams: array of const): String;
+var
+  vText: string;
+begin
+  if Assigned(FFormatFunc) then
+    Result := FFormatFunc(ALevel, ATemplate, AParams)
+  else
+  begin
+    vText := Format(ATemplate, AParams);
+    Result := Format('%s'#9'%s'#9'%s',
+      [DateTimeToStr(Now), GetLogLevelName(ALevel), vText]);
+  end;
+end;
+
+class function TBaseLogger.GetLogLevelName(ALevel: TLogLevel): string;
+begin
+  Result := CLogLevelNames[ALevel];
+end;
+
+procedure TBaseLogger.LogDebug(ATemplate: string; AParams: array of const);
+begin
+  LogString(lolDebug, ATemplate, AParams)
+end;
+
+procedure TBaseLogger.LogError(ATemplate: string; AParams: array of const);
+begin
+  LogString(lolError, ATemplate, AParams)
+end;
+
+procedure TBaseLogger.LogInfo(ATemplate: string; AParams: array of const);
+begin
+  LogString(lolInfo, ATemplate, AParams)
+end;
+
+procedure TBaseLogger.LogString(ALevel: TLogLevel; ATemplate: string; AParams:
+    array of const);
+begin
+  if ALevel >= Severity then
+    AddLogString(FormatLogRecord(ALevel, ATemplate, AParams));
+end;
+
+procedure TBaseLogger.LogWarning(ATemplate: string; AParams: array of const);
+begin
+  LogString(lolWarning, ATemplate, AParams)
+end;
+
+procedure TBaseLogger.SetSeverity(const Value: TLogLevel);
+begin
+  FSeverity := Value;
+end;
+
+end.
