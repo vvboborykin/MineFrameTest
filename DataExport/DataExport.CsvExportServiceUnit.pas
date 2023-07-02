@@ -6,44 +6,40 @@
 * Created: 01.07.2023 21:25:32
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit DataExport.DataSetToCsvUnit;
+unit DataExport.CsvExportServiceUnit;
 
 interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils, Data.DB,
   DataImport.MicromineImportService, DataImport.ColumnUnit, DataImport.RowUnit,
-  DataExport.DataSetExportServiceUnit, DataExport.CsvExportContextUnit;
+  DataExport.CsvExportContextUnit, DataExport.BaseExportServiceUnit;
 
 type
-  /// <summary>TDataSetToCsvExportService
+  /// <summary>TCsvExportService
   /// Сервис экспорта в CSV
   /// </summary>
-  TDataSetToCsvExportService = class(TDataSetExportService)
+  TCsvExportService = class(TBaseExportService<TCsvExportContext>)
   private
     function BuildCsvLine(AFunc: TFunc<TField, string>): string;
   protected
     function GetHeader: string; override;
     function GetRecordLine: string; override;
   public
-    constructor Create(AContext: TCsvExportContext);
-    function CsvContext: TCsvExportContext;
   end;
 
 implementation
 
 uses
-  System.IOUtils;
+  System.IOUtils, DataExport.ExportFormatRegistryUnit;
+
+resourcestring
+  SExpotrToCsvFile = 'Экспорт в файл CSV';
 
 const
   CDefaultDelimiterChar = #9;
 
-constructor TDataSetToCsvExportService.Create(AContext: TCsvExportContext);
-begin
-  inherited Create(AContext);
-end;
-
-function TDataSetToCsvExportService.BuildCsvLine(AFunc: TFunc<TField, string>):
+function TCsvExportService.BuildCsvLine(AFunc: TFunc<TField, string>):
     string;
 var
   vDataSet: TDataSet;
@@ -54,17 +50,17 @@ begin
   for var I := 0 to vDataSet.FieldCount - 1 do
   begin
     var vField := vDataSet.Fields[I];
-    var vColNameStr :=  AFunc(vField);
+    var vColNameStr := AFunc(vField);
 
-    if CsvContext.QuoteString and (vField is TStringField)  then
+    if Context.QuoteString and (vField is TStringField)  then
       vColNameStr := AnsiQuotedStr(vColNameStr, '"');
 
     vLineItems := vLineItems + [vColNameStr];
   end;
-  Result := ''.Join(CsvContext.DelimiterChar, vLineItems);
+  Result := ''.Join(Context.DelimiterChar, vLineItems);
 end;
 
-function TDataSetToCsvExportService.GetHeader: string;
+function TCsvExportService.GetHeader: string;
 begin
   Result := BuildCsvLine(
     function(AField: TField): string
@@ -73,7 +69,7 @@ begin
     end);
 end;
 
-function TDataSetToCsvExportService.GetRecordLine: string;
+function TCsvExportService.GetRecordLine: string;
 begin
   Result := BuildCsvLine(
     function(AField: TField): string
@@ -82,10 +78,8 @@ begin
     end);
 end;
 
-function TDataSetToCsvExportService.CsvContext: TCsvExportContext;
-begin
-  Result := Context as TCsvExportContext;
-end;
-
+initialization
+  ExportFormatRegistry.Add(TExportFormat.Create(TCsvExportContext,
+    TCsvExportService, SExpotrToCsvFile));
 end.
 

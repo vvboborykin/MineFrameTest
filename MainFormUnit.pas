@@ -72,7 +72,7 @@ var
 implementation
 
 uses
-  Log.DelegatedLoggerUnit, DataExport.DataSetExportServiceFactoryUnit,
+  Log.DelegatedLoggerUnit, DataExport.ExportServiceFactoryUnit,
   DataExport.ExportContextUnit, DataExport.CsvExportContextUnit;
 
 const

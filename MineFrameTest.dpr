@@ -18,11 +18,19 @@ uses
   DataConverters.StrNumericDataConverterUnit in 'DataConverters\DataConverters.StrNumericDataConverterUnit.pas',
   DataConverters.StringDataConverterUnit in 'DataConverters\DataConverters.StringDataConverterUnit.pas',
   Log.DelegatedLoggerUnit in 'Log\Log.DelegatedLoggerUnit.pas',
-  DataExport.DataSetExportServiceFactoryUnit in 'DataExport\DataExport.DataSetExportServiceFactoryUnit.pas',
-  DataExport.DataSetExportServiceUnit in 'DataExport\DataExport.DataSetExportServiceUnit.pas',
-  DataExport.DataSetToCsvUnit in 'DataExport\DataExport.DataSetToCsvUnit.pas',
+  DataExport.ExportServiceFactoryUnit in 'DataExport\DataExport.ExportServiceFactoryUnit.pas',
+  DataExport.CsvExportServiceUnit in 'DataExport\DataExport.CsvExportServiceUnit.pas',
   DataExport.CsvExportContextUnit in 'DataExport\DataExport.CsvExportContextUnit.pas',
-  DataExport.ExportContextUnit in 'DataExport\DataExport.ExportContextUnit.pas';
+  DataExport.ExportContextUnit in 'DataExport\DataExport.ExportContextUnit.pas',
+  DataExport.TxtExportServiceUnit in 'DataExport\DataExport.TxtExportServiceUnit.pas',
+  DataExport.TxtExportContextUnit in 'DataExport\DataExport.TxtExportContextUnit.pas',
+  DataExport.BaseExportServiceUnit in 'DataExport\DataExport.BaseExportServiceUnit.pas',
+  ExportGui.ExportFormUnit in 'ExportGui\ExportGui.ExportFormUnit.pas' {ExportForm},
+  DataExport.ExportFormatRegistryUnit in 'DataExport\DataExport.ExportFormatRegistryUnit.pas',
+  ExportGui.ExportContextFormRegistryUnit in 'ExportGui\ExportGui.ExportContextFormRegistryUnit.pas',
+  ExportGui.BaseContextEditorUnit in 'ExportGui\ExportGui.BaseContextEditorUnit.pas' {BaseContextEditor},
+  ExportGui.CsvContextEditorUnitt in 'ExportGui\ExportGui.CsvContextEditorUnitt.pas' {CsvContextEditor},
+  ExportGui.CodePageContextEditorUnit in 'ExportGui\ExportGui.CodePageContextEditorUnit.pas' {CodePageContextEditor};
 
 {$R *.res}
 

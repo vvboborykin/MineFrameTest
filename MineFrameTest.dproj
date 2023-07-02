@@ -117,11 +117,31 @@
         <DCCReference Include="DataConverters\DataConverters.StrNumericDataConverterUnit.pas"/>
         <DCCReference Include="DataConverters\DataConverters.StringDataConverterUnit.pas"/>
         <DCCReference Include="Log\Log.DelegatedLoggerUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.DataSetExportServiceFactoryUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.DataSetExportServiceUnit.pas"/>
-        <DCCReference Include="DataExport\DataExport.DataSetToCsvUnit.pas"/>
+        <DCCReference Include="DataExport\DataExport.ExportServiceFactoryUnit.pas"/>
+        <DCCReference Include="DataExport\DataExport.CsvExportServiceUnit.pas"/>
         <DCCReference Include="DataExport\DataExport.CsvExportContextUnit.pas"/>
         <DCCReference Include="DataExport\DataExport.ExportContextUnit.pas"/>
+        <DCCReference Include="DataExport\DataExport.TxtExportServiceUnit.pas"/>
+        <DCCReference Include="DataExport\DataExport.TxtExportContextUnit.pas"/>
+        <DCCReference Include="DataExport\DataExport.BaseExportServiceUnit.pas"/>
+        <DCCReference Include="ExportGui\ExportGui.ExportFormUnit.pas">
+            <Form>ExportForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="DataExport\DataExport.ExportFormatRegistryUnit.pas"/>
+        <DCCReference Include="ExportGui\ExportGui.ExportContextFormRegistryUnit.pas"/>
+        <DCCReference Include="ExportGui\ExportGui.BaseContextEditorUnit.pas">
+            <Form>BaseContextEditor</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ExportGui\ExportGui.CsvContextEditorUnitt.pas">
+            <Form>CsvContextEditor</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ExportGui\ExportGui.CodePageContextEditorUnit.pas">
+            <Form>CodePageContextEditor</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

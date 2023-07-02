@@ -1,7 +1,7 @@
 ﻿{*******************************************************
 * Project: MineFrameTest
 * Unit: DataExport.CsvExportContextUnit.pas
-* Description: Сервис экспорта данных в CSV
+* Description: Контекст данных для экспорта в CSV
 *
 * Created: 01.07.2023 22:15:26
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
@@ -17,7 +17,7 @@ uses
 
 type
   /// <summary>TCsvExportContext
-  /// Сервис экспорта данных в CSV
+  /// Контекст данных для экспорта в CSV
   /// </summary>
   TCsvExportContext = class(TExportContext)
   private

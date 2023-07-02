@@ -1,4 +1,12 @@
-﻿unit DataExport.ExportContextUnit;
+﻿{*******************************************************
+* Project: MineFrameTest
+* Unit: DataExport.ExportContextUnit.pas
+* Description: Базовый класс для контекстов экспорта данных
+*
+* Created: 02.07.2023 11:52:50
+* Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
+unit DataExport.ExportContextUnit;
 
 interface
 
@@ -6,7 +14,12 @@ uses
   Data.DB;
 
 type
-  TExportContext = class
+  TExportContextClass = class of TExportContext;
+
+  /// <summary>TExportContext
+  /// Базовый класс для контекстов экспорта данных
+  /// </summary>
+  TExportContext = class abstract
   private
     FDataSet: TDataSet;
     FFileName: string;
