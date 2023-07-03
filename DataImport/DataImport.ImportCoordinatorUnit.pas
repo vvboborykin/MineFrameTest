@@ -3,8 +3,11 @@
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Variants, System.StrUtils,
-  SYstem.IOUtils, Generics.Collections, Progress.IProgressUnit, Log.ILoggerUnit,
+  System.Generics.Collections, DataImport.ImportFormatUnit,
+  DataImport.ImportContextUnit, System.SysUtils,
+  System.Classes,
+  System.Variants, System.StrUtils,
+  System.IOUtils, Generics.Collections, Progress.IProgressUnit, Log.ILoggerUnit,
   System.Threading, DataImport.ImportFormatRegistryUnit;
 
 type
@@ -16,8 +19,8 @@ type
     function GetFormat(AFileName: string): TImportFormat;
     procedure DoImportUsingFormat(AFileName: string; AFormat: TImportFormat; ATask:
         ITask);
-    function SelectFormat(AFileName: string; AList: TList<TImportFormat>):
-      TImportFormat;
+    function SelectFormat(AFileName: string;
+      AList: TList<DataImport.ImportFormatUnit.TImportFormat>): TImportFormat;
   private
     FAfterImport: TNotifyEvent;
     FContext: TImportContext;
@@ -183,4 +186,3 @@ begin
 end;
 
 end.
-

@@ -145,6 +145,11 @@
         <DCCReference Include="DataImport\MicroMine\DataImport.MicroMine.DataSetBuilderUnit.pas"/>
         <DCCReference Include="DataImport\DataImport.ImportFormatRegistryUnit.pas"/>
         <DCCReference Include="DataImport\DataImport.ImportCoordinatorUnit.pas"/>
+        <DCCReference Include="DataImport\DataImport.ImportFormatDetectorUnit.pas"/>
+        <DCCReference Include="DataImport\DataImport.ImportResultUnit.pas"/>
+        <DCCReference Include="DataImport\DataImport.ImportContextUnit.pas"/>
+        <DCCReference Include="DataImport\DataImport.ImportServiceUnit.pas"/>
+        <DCCReference Include="DataImport\DataImport.ImportFormatUnit.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
