@@ -108,9 +108,9 @@
         <DCCReference Include="Log\Log.NullLoggerUnit.pas"/>
         <DCCReference Include="Progress\Progress.NullProgressUnit.pas"/>
         <DCCReference Include="Progress\Progress.DelegatedProgressUnit.pas"/>
-        <DCCReference Include="DataImport\DataImport.MicromineImportService.pas"/>
-        <DCCReference Include="DataImport\DataImport.ColumnUnit.pas"/>
-        <DCCReference Include="DataImport\DataImport.RowUnit.pas"/>
+        <DCCReference Include="DataImport\MicroMine\DataImport.MicroMine.ImportService.pas"/>
+        <DCCReference Include="DataImport\MicroMine\DataImport.MicroMine.ColumnUnit.pas"/>
+        <DCCReference Include="DataImport\MicroMine\DataImport.MicroMine.RowUnit.pas"/>
         <DCCReference Include="DataConverters\DataConverters.ItemDataConverterUnit.pas"/>
         <DCCReference Include="DataConverters\DataConverters.DoubleDataConverterUnit.pas"/>
         <DCCReference Include="DataConverters\DataConverters.ItemDataConverterFactoryUnit.pas"/>
@@ -142,8 +142,9 @@
             <Form>CodePageContextEditor</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="DataImport\DataImport.DataSetBuilderUnit.pas"/>
+        <DCCReference Include="DataImport\MicroMine\DataImport.MicroMine.DataSetBuilderUnit.pas"/>
         <DCCReference Include="DataImport\DataImport.ImportFormatRegistryUnit.pas"/>
+        <DCCReference Include="DataImport\DataImport.ImportCoordinatorUnit.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -15,8 +15,9 @@ uses
   System.Threading, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, System.Actions, Vcl.ActnList, Vcl.StdCtrls,
   Progress.IProgressUnit, Log.ILoggerUnit, System.ImageList, Vcl.ImgList,
-  Vcl.ComCtrls, DataImport.MicromineImportService, Data.DB, Vcl.ExtCtrls,
-  Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Datasnap.DBClient, DataImport.ColumnUnit;
+  Vcl.ComCtrls, DataImport.Micromine.ImportService, Data.DB, Vcl.ExtCtrls,
+  Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Datasnap.DBClient,
+  DataImport.MicroMine.ColumnUnit;
 
 type
   /// <summary>TMainForm
@@ -52,7 +53,7 @@ type
     procedure LoadFromMicromineFile(vFileName: TFileName);
     function SelectMicromineFile(out vFileName: TFileName): Boolean;
     procedure StartBackgroundImportTask(AFileName: TFileName);
-    procedure LoadImportResultsToTable(AImportService: TMicromineImportService);
+    procedure LoadImportResultsToTable(AImportService: TImportService);
   public
     property Logger: ILogger read FLogger implements ILogger;
   end;
@@ -65,7 +66,7 @@ implementation
 uses
   Log.DelegatedLoggerUnit, DataExport.ExportServiceFactoryUnit,
   DataExport.ExportContextUnit, DataExport.CsvExportContextUnit,
-  ExportGui.ExportFormUnit, DataImport.DataSetBuilderUnit;
+  ExportGui.ExportFormUnit, DataImport.MicroMine.DataSetBuilderUnit;
 
 resourcestring
   SLoadAbortedByUser = 'Загрузка прервана пользователем';
@@ -118,8 +119,7 @@ begin
     StartBackgroundImportTask(vFileName);
 end;
 
-procedure TMainForm.LoadImportResultsToTable(AImportService:
-  TMicromineImportService);
+procedure TMainForm.LoadImportResultsToTable(AImportService: TImportService);
 begin
   var vBuilder := TDataSetBuilder.Create(AImportService, cdsImportResults);
   try
@@ -178,7 +178,7 @@ begin
   FImportTask := TTask.Create(
     procedure
     begin
-      var vImportService := TMicromineImportService.Create(vContext);
+      var vImportService := TImportService.Create(vContext);
       try
         try
           vImportService.ImportFromFile(AFileName);

@@ -12,8 +12,9 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils, Data.DB,
-  DataImport.MicromineImportService, DataImport.ColumnUnit, DataImport.RowUnit,
-  DataExport.CsvExportContextUnit, DataExport.BaseExportServiceUnit;
+  DataImport.Micromine.ImportService, DataImport.MicroMine.ColumnUnit,
+  DataImport.MicroMine.RowUnit, DataExport.CsvExportContextUnit,
+  DataExport.BaseExportServiceUnit;
 
 type
   /// <summary>TCsvExportService
@@ -39,8 +40,7 @@ resourcestring
 const
   CDefaultDelimiterChar = #9;
 
-function TCsvExportService.BuildCsvLine(AFunc: TFunc<TField, string>):
-    string;
+function TCsvExportService.BuildCsvLine(AFunc: TFunc<TField, string>): string;
 var
   vDataSet: TDataSet;
 begin
@@ -52,7 +52,7 @@ begin
     var vField := vDataSet.Fields[I];
     var vColNameStr := AFunc(vField);
 
-    if Context.QuoteString and (vField is TStringField)  then
+    if Context.QuoteString and (vField is TStringField) then
       vColNameStr := AnsiQuotedStr(vColNameStr, '"');
 
     vLineItems := vLineItems + [vColNameStr];
@@ -63,10 +63,10 @@ end;
 function TCsvExportService.GetHeader: TArray<string>;
 begin
   Result := [BuildCsvLine(
-    function(AField: TField): string
-    begin
-      Result := AField.DisplayLabel;
-    end)];
+  function(AField: TField): string
+  begin
+    Result := AField.DisplayLabel;
+  end)];
 end;
 
 function TCsvExportService.GetRecordLine: string;
@@ -81,5 +81,6 @@ end;
 initialization
   ExportFormatRegistry.Add(TExportFormat.Create(TCsvExportContext,
     TCsvExportService, SExpotrToCsvFile));
+
 end.
 

@@ -6,15 +6,15 @@
 * Created: 01.07.2023 18:26:44
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit DataImport.MicromineImportService;
+unit DataImport.MicroMine.ImportService;
 
 interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils,
   System.Threading, System.IOUtils, Generics.Collections, System.Math,
-  DataImport.ColumnUnit, DataImport.RowUnit, Progress.IProgressUnit,
-  Log.ILoggerUnit;
+  DataImport.MicroMine.ColumnUnit, DataImport.MicroMine.RowUnit,
+  Progress.IProgressUnit, Log.ILoggerUnit;
 
 type
   /// <summary>TImportContext
@@ -57,10 +57,10 @@ type
     property Task: ITask read FTask write SetTask;
   end;
 
-  /// <summary>TMicromineImportService
+  /// <summary>TImportService
   /// Сервис импорта данных из файла STR MICROMINE
   /// </summary>
-  TMicromineImportService = class
+  TImportService = class
   strict private
     FCodePage: Integer;
     FColumns: TObjectList<TColumn>;
@@ -97,47 +97,47 @@ type
   public
     constructor Create(AImportContext: TImportContext);
     destructor Destroy; override;
-    /// <summary>TMicromineImportService.ImportFromFile
+    /// <summary>TImportService.ImportFromFile
     /// Импортировать данные из файла MICROMINE - главная операция сервиса
     /// </summary>
     /// <param name="AFileName"> (string) </param>
     procedure ImportFromFile(AFileName: string);
-    // <summary>TMicromineImportService.CodePage
+    // <summary>TImportService.CodePage
     // Номер кодовой станицы, в которой закодированы строки файла
     // </summary>
     // type:Integer
     property CodePage: Integer read FCodePage write SetCodePage;
-    /// <summary>TMicromineImportService.Columns
+    /// <summary>TImportService.Columns
     /// Определения колонок данных из файла
     /// </summary>
     /// type:TObjectList<TColumn>
     property Columns: TObjectList<TColumn> read FColumns;
-    /// <summary>TMicromineImportService.FormatMarker
+    /// <summary>TImportService.FormatMarker
     /// Маркер формата файла (строка-заголовок из файла)
     /// </summary>
     /// type:string
     property FormatMarker: string read FFormatMarker write SetFormatMarker;
-    /// <summary>TMicromineImportService.ImportContext
+    /// <summary>TImportService.ImportContext
     /// Контекст операции импорта, передаваемый при создании сервиса
     /// </summary>
     /// type:TImportContext
     property ImportContext: TImportContext read FImportContext;
-    /// <summary>TMicromineImportService.MetadataBytes
+    /// <summary>TImportService.MetadataBytes
     /// Двоичные метаданные из файла
     /// </summary>
     /// type:TBytes
     property MetadataBytes: TBytes read FMetadataBytes write FMetadataBytes;
-    /// <summary>TMicromineImportService.MetadataXml
+    /// <summary>TImportService.MetadataXml
     /// XML метаданые из файла
     /// </summary>
     /// type:string
     property MetadataXml: string read FMetadataXml write SetMetadataXml;
-    /// <summary>TMicromineImportService.Rows
+    /// <summary>TImportService.Rows
     /// Записи данных из файла
     /// </summary>
     /// type:TObjectList<TRow>
     property Rows: TObjectList<TRow> read FRows;
-    /// <summary>TMicromineImportService.VariablesCount
+    /// <summary>TImportService.VariablesCount
     /// Количество колонок считанное из файла
     /// </summary>
     /// type:Integer
@@ -192,7 +192,7 @@ const
   SMetadataEndMarker = '</metadata>';
   SFileHeaderMarker = 'THIS IS MICROMINE EXTENDED DATA FILE!'#$07#$1A#$01;
 
-constructor TMicromineImportService.Create(AImportContext: TImportContext);
+constructor TImportService.Create(AImportContext: TImportContext);
 begin
   inherited Create;
   if AImportContext = nil then
@@ -204,20 +204,20 @@ begin
   FImportContext := AImportContext;
 end;
 
-destructor TMicromineImportService.Destroy;
+destructor TImportService.Destroy;
 begin
   FRows.Free;
   FColumns.Free;
   inherited Destroy;
 end;
 
-procedure TMicromineImportService.AddLogInfo(AText: string; AParams: array of
+procedure TImportService.AddLogInfo(AText: string; AParams: array of
   const);
 begin
   FImportContext.FLogger.LogInfo(AText, AParams);
 end;
 
-procedure TMicromineImportService.AddRow(ARowBuffer: TBytes);
+procedure TImportService.AddRow(ARowBuffer: TBytes);
 begin
   var vRow := TRow.Create;
   Rows.Add(vRow);
@@ -230,7 +230,7 @@ begin
     AddRowItem(vStreamOfRow, Columns[I], vRow);
 end;
 
-procedure TMicromineImportService.AddRowItem(AStreamOfRow: TStream; AColumn:
+procedure TImportService.AddRowItem(AStreamOfRow: TStream; AColumn:
   TColumn; ARow: TRow);
 begin
   var vItem := TRowItem.Create;
@@ -247,7 +247,7 @@ begin
   ConvertItemValueFromBytes(AColumn, ARow, vBuffer, vItem);
 end;
 
-function TMicromineImportService.BuffferEndsWithBytes(ABuffer, AEndMarker:
+function TImportService.BuffferEndsWithBytes(ABuffer, AEndMarker:
   TBytes): Boolean;
 begin
   var vLen := Length(AEndMarker);
@@ -255,7 +255,7 @@ begin
     (ABuffer) + Length(ABuffer) - vLen), AEndMarker, vLen);
 end;
 
-procedure TMicromineImportService.ConvertItemValueFromBytes(AColumn: TColumn;
+procedure TImportService.ConvertItemValueFromBytes(AColumn: TColumn;
   ARow: TRow; vBuffer: TBytes; vItem: TRowItem);
 begin
   var vContext := TDataConverterContext.Create;
@@ -276,12 +276,12 @@ begin
   end;
 end;
 
-function TMicromineImportService.Encoding: TEncoding;
+function TImportService.Encoding: TEncoding;
 begin
   Result := TEncoding.GetEncoding(CodePage);
 end;
 
-function TMicromineImportService.GetRowSize: LongInt;
+function TImportService.GetRowSize: LongInt;
 begin
   Result := 0;
   for var vColumn in Columns do
@@ -291,7 +291,7 @@ begin
   Inc(Result);
 end;
 
-procedure TMicromineImportService.ImportFromFile(AFileName: string);
+procedure TImportService.ImportFromFile(AFileName: string);
 begin
   if not TFile.Exists(AFileName) then
     raise EFileNotFoundException.CreateFmt(SFileNotFound, [AFileName]);
@@ -325,7 +325,7 @@ begin
   AddLogInfo(SLoadCompleted, []);
 end;
 
-procedure TMicromineImportService.ProcessAppMessages;
+procedure TImportService.ProcessAppMessages;
 begin
   TThread.Synchronize(nil,
     procedure
@@ -334,7 +334,7 @@ begin
     end);
 end;
 
-procedure TMicromineImportService.ReadColumn(vFileStream: TBufferedFileStream);
+procedure TImportService.ReadColumn(vFileStream: TBufferedFileStream);
 begin
   var vColumnStr := ReadString(vFileStream);
 
@@ -360,7 +360,7 @@ begin
       + 1).Trim();
 end;
 
-procedure TMicromineImportService.ReadColumns(vFileStream: TBufferedFileStream);
+procedure TImportService.ReadColumns(vFileStream: TBufferedFileStream);
 var
   I: Integer;
 begin
@@ -372,7 +372,7 @@ begin
   AddLogInfo(SColumnDefenitionsReaded, []);
 end;
 
-procedure TMicromineImportService.ReadFormatMarker(vFileStream:
+procedure TImportService.ReadFormatMarker(vFileStream:
   TBufferedFileStream);
 begin
   AddLogInfo(SReadFormatMarker, []);
@@ -386,7 +386,7 @@ begin
   ShowProgresss(vFileStream);
 end;
 
-procedure TMicromineImportService.ReadMetadataBytes(vFileStream:
+procedure TImportService.ReadMetadataBytes(vFileStream:
   TBufferedFileStream);
 begin
   AddLogInfo(SReadingBinaryMethadata, []);
@@ -407,7 +407,7 @@ begin
   vFileStream.Seek(-vVarLen, TSeekOrigin.soCurrent);
 end;
 
-function TMicromineImportService.ReadMetadataXmlString(vFileStream:
+function TImportService.ReadMetadataXmlString(vFileStream:
   TBufferedFileStream): Boolean;
 begin
   AddLogInfo(SLookForXmlMethadata, []);
@@ -425,7 +425,7 @@ begin
     AddLogInfo(SXmlMethadataFound, []);
 end;
 
-procedure TMicromineImportService.ReadRows(vFileStream: TBufferedFileStream);
+procedure TImportService.ReadRows(vFileStream: TBufferedFileStream);
 begin
   AddLogInfo(SReadingRows, []);
 
@@ -449,7 +449,7 @@ begin
   AddLogInfo(SRowsReaded, [Rows.Count]);
 end;
 
-function TMicromineImportService.ReadSection(vFileStream: TBufferedFileStream;
+function TImportService.ReadSection(vFileStream: TBufferedFileStream;
   AEndMarker: TBytes): TBytes;
 begin
   Result := nil;
@@ -463,7 +463,7 @@ begin
   until vReadLen = 0;
 end;
 
-function TMicromineImportService.ReadString(vFileStream: TBufferedFileStream):
+function TImportService.ReadString(vFileStream: TBufferedFileStream):
   string;
 begin
   var vBuffer := ReadSection(vFileStream, [$0A]);
@@ -473,7 +473,7 @@ begin
   Result := LeftStr(Result, Length(Result) - 1);
 end;
 
-procedure TMicromineImportService.ReadVariablesCount(vFileStream:
+procedure TImportService.ReadVariablesCount(vFileStream:
   TBufferedFileStream);
 begin
   AddLogInfo(SReadingColumnCount, []);
@@ -486,27 +486,27 @@ begin
   AddLogInfo(SColumnCountSpecified, [VariablesCount]);
 end;
 
-procedure TMicromineImportService.SetCodePage(const Value: Integer);
+procedure TImportService.SetCodePage(const Value: Integer);
 begin
   FCodePage := Value;
 end;
 
-procedure TMicromineImportService.SetFormatMarker(const Value: string);
+procedure TImportService.SetFormatMarker(const Value: string);
 begin
   FFormatMarker := Value;
 end;
 
-procedure TMicromineImportService.SetMetadataXml(const Value: string);
+procedure TImportService.SetMetadataXml(const Value: string);
 begin
   FMetadataXml := Value;
 end;
 
-procedure TMicromineImportService.SetVariablesCount(const Value: Integer);
+procedure TImportService.SetVariablesCount(const Value: Integer);
 begin
   FVariablesCount := Value;
 end;
 
-procedure TMicromineImportService.ShowProgresss(vFileStream: TBufferedFileStream);
+procedure TImportService.ShowProgresss(vFileStream: TBufferedFileStream);
 begin
   FImportContext.FProgress.ShowPercent(100 * vFileStream.Position / vFileStream.Size)
 end;

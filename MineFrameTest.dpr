@@ -9,9 +9,9 @@ uses
   Log.NullLoggerUnit in 'Log\Log.NullLoggerUnit.pas',
   Progress.NullProgressUnit in 'Progress\Progress.NullProgressUnit.pas',
   Progress.DelegatedProgressUnit in 'Progress\Progress.DelegatedProgressUnit.pas',
-  DataImport.MicromineImportService in 'DataImport\DataImport.MicromineImportService.pas',
-  DataImport.ColumnUnit in 'DataImport\DataImport.ColumnUnit.pas',
-  DataImport.RowUnit in 'DataImport\DataImport.RowUnit.pas',
+  DataImport.MicroMine.ImportService in 'DataImport\MicroMine\DataImport.MicroMine.ImportService.pas',
+  DataImport.MicroMine.ColumnUnit in 'DataImport\MicroMine\DataImport.MicroMine.ColumnUnit.pas',
+  DataImport.MicroMine.RowUnit in 'DataImport\MicroMine\DataImport.MicroMine.RowUnit.pas',
   DataConverters.ItemDataConverterUnit in 'DataConverters\DataConverters.ItemDataConverterUnit.pas',
   DataConverters.DoubleDataConverterUnit in 'DataConverters\DataConverters.DoubleDataConverterUnit.pas',
   DataConverters.ItemDataConverterFactoryUnit in 'DataConverters\DataConverters.ItemDataConverterFactoryUnit.pas',
@@ -31,8 +31,9 @@ uses
   ExportGui.BaseContextEditorUnit in 'ExportGui\ExportGui.BaseContextEditorUnit.pas' {BaseContextEditor},
   ExportGui.CsvContextEditorUnitt in 'ExportGui\ExportGui.CsvContextEditorUnitt.pas' {CsvContextEditor},
   ExportGui.CodePageContextEditorUnit in 'ExportGui\ExportGui.CodePageContextEditorUnit.pas' {CodePageContextEditor},
-  DataImport.DataSetBuilderUnit in 'DataImport\DataImport.DataSetBuilderUnit.pas',
-  DataImport.ImportFormatRegistryUnit in 'DataImport\DataImport.ImportFormatRegistryUnit.pas';
+  DataImport.MicroMine.DataSetBuilderUnit in 'DataImport\MicroMine\DataImport.MicroMine.DataSetBuilderUnit.pas',
+  DataImport.ImportFormatRegistryUnit in 'DataImport\DataImport.ImportFormatRegistryUnit.pas',
+  DataImport.ImportCoordinatorUnit in 'DataImport\DataImport.ImportCoordinatorUnit.pas';
 
 {$R *.res}
 

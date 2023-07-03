@@ -12,8 +12,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils, Data.DB,
-  DataImport.MicromineImportService, DataImport.ColumnUnit, DataImport.RowUnit,
-  DataExport.ExportContextUnit;
+  DataImport.Micromine.ImportService, DataImport.MicroMine.ColumnUnit,
+  DataImport.MicroMine.RowUnit, DataExport.ExportContextUnit;
 
 type
   /// <summary>TCsvExportContext
@@ -27,7 +27,7 @@ type
     procedure SetQuoteString(const Value: Boolean);
   public
     constructor Create; override;
-    class function FileExtension: String; override;
+    class function FileExtension: string; override;
     /// <summary>TCsvExportContext.DelimiterChar
     /// Разделитель данных CSV файла (по умолчанию символ табуляции #9)
     /// </summary>
@@ -51,7 +51,7 @@ begin
   FDelimiterChar := CDefaultDelimiter;
 end;
 
-class function TCsvExportContext.FileExtension: String;
+class function TCsvExportContext.FileExtension: string;
 begin
   Result := '.CSV';
 end;
@@ -73,3 +73,4 @@ begin
 end;
 
 end.
+

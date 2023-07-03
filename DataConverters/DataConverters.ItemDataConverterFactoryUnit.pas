@@ -12,8 +12,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils,
-  System.IOUtils, Generics.Collections, System.Math, DataImport.ColumnUnit,
-  DataImport.RowUnit, DataConverters.ItemDataConverterUnit;
+  System.IOUtils, Generics.Collections, System.Math, DataImport.MicroMine.ColumnUnit,
+  DataImport.MicroMine.RowUnit, DataConverters.ItemDataConverterUnit;
 
 type
   /// <summary>TItemDataConverterFactory

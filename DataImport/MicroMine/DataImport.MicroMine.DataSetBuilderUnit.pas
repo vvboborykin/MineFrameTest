@@ -6,13 +6,13 @@
 * Created: 02.07.2023 21:13:11
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
 *******************************************************}
-unit DataImport.DataSetBuilderUnit;
+unit DataImport.MicroMine.DataSetBuilderUnit;
 
 interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils, Data.DB,
-  Datasnap.DBClient, DataImport.MicromineImportService, DataImport.ColumnUnit;
+  Datasnap.DBClient, DataImport.Micromine.ImportService, DataImport.MicroMine.ColumnUnit;
 
 type
   /// <summary>TDataSetBuilder
@@ -20,7 +20,7 @@ type
   /// </summary>
   TDataSetBuilder = class
   strict private
-    FImportService: TMicromineImportService;
+    FImportService: TImportService;
     FDataSet: TClientDataSet;
     procedure AppendRecordsToTable;
     procedure CreateDataFieldDefs;
@@ -29,8 +29,7 @@ type
     procedure LoadImportResultsToTable;
     procedure SetFieldDisplayNames;
   public
-    constructor Create(AImportService: TMicromineImportService; ADataSet:
-        TClientDataSet);
+    constructor Create(AImportService: TImportService; ADataSet: TClientDataSet);
     /// <summary>TDataSetBuilder.BuildDataSetFromImportServiceResults
     /// Выгрузить результаты импорта в DataSet
     /// </summary>
@@ -39,8 +38,8 @@ type
 
 implementation
 
-constructor TDataSetBuilder.Create(AImportService: TMicromineImportService;
-    ADataSet: TClientDataSet);
+constructor TDataSetBuilder.Create(AImportService: TImportService; ADataSet:
+    TClientDataSet);
 begin
   inherited Create;
   FImportService := AImportService;

@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Variants, System.StrUtils, Data.DB,
-  DataImport.MicromineImportService, DataImport.ColumnUnit, DataImport.RowUnit,
+  DataImport.Micromine.ImportService, DataImport.MicroMine.ColumnUnit, DataImport.MicroMine.RowUnit,
   DataExport.ExportContextUnit;
 
 type
