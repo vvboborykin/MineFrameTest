@@ -33,7 +33,7 @@ uses
   ExportGui.CodePageContextEditorUnit in 'ExportGui\ExportGui.CodePageContextEditorUnit.pas' {CodePageContextEditor},
   DataImport.MicroMine.DataSetBuilderUnit in 'DataImport\MicroMine\DataImport.MicroMine.DataSetBuilderUnit.pas',
   DataImport.ImportFormatRegistryUnit in 'DataImport\DataImport.ImportFormatRegistryUnit.pas',
-  DataImport.ImportCoordinatorUnit in 'DataImport\DataImport.ImportCoordinatorUnit.pas',
+  DataImport.ImportWorkerUnit in 'DataImport\DataImport.ImportWorkerUnit.pas',
   DataImport.ImportFormatDetectorUnit in 'DataImport\DataImport.ImportFormatDetectorUnit.pas',
   DataImport.ImportResultUnit in 'DataImport\DataImport.ImportResultUnit.pas',
   DataImport.ImportContextUnit in 'DataImport\DataImport.ImportContextUnit.pas',

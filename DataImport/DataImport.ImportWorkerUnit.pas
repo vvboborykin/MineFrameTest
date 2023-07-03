@@ -1,4 +1,12 @@
-﻿unit DataImport.ImportCoordinatorUnit;
+﻿{*******************************************************
+* Project: MineFrameTest
+* Unit: DataImport.ImportWorkerUnit.pas
+* Description: Объект выполняющий импорт
+*
+* Created: 03.07.2023 23:03:12
+* Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
+unit DataImport.ImportWorkerUnit;
 
 interface
 
@@ -11,8 +19,14 @@ uses
   System.Threading, DataImport.ImportFormatRegistryUnit;
 
 type
-  TImportCoordinator = class
+  /// <summary>TImportWorker
+  /// Объект выполняющий импорт
+  /// </summary>
+  TImportWorker = class
   strict private
+    FAfterImport: TNotifyEvent;
+    FContext: TImportContext;
+    FProcessMessages: TProc;
     FSourceStream: TStream;
     procedure DoAfterImport;
     procedure DoProcessMessages;
@@ -21,10 +35,6 @@ type
         ITask);
     function SelectFormat(AFileName: string;
       AList: TList<DataImport.ImportFormatUnit.TImportFormat>): TImportFormat;
-  private
-    FAfterImport: TNotifyEvent;
-    FContext: TImportContext;
-    FProcessMessages: TProc;
   public
     function ImportFromFileAsync(AImportContext: TImportContext; AFileName:
       string; AfterImport: TNotifyEvent; AProcessMessages: TProc): ITask;
@@ -43,7 +53,7 @@ resourcestring
   SNotregisteregFormatForExtension =
     'Для расширения файла %s не зарегистрирован формат импорта';
 
-procedure TImportCoordinator.DoAfterImport;
+procedure TImportWorker.DoAfterImport;
 begin
   if Assigned(FAfterImport) then
     TThread.Synchronize(nil,
@@ -53,7 +63,7 @@ begin
       end)
 end;
 
-procedure TImportCoordinator.DoProcessMessages;
+procedure TImportWorker.DoProcessMessages;
 begin
   if Assigned(FProcessMessages) then
     TTHread.Synchronize(nil,
@@ -63,7 +73,7 @@ begin
       end);
 end;
 
-function TImportCoordinator.GetFormat(AFileName: string): TImportFormat;
+function TImportWorker.GetFormat(AFileName: string): TImportFormat;
 begin
   var vFormats := TList<TImportFormat>.Create;
   try
@@ -82,7 +92,7 @@ begin
   end;
 end;
 
-function TImportCoordinator.ImportFromFileAsync(AImportContext: TImportContext;
+function TImportWorker.ImportFromFileAsync(AImportContext: TImportContext;
   AFileName: string; AfterImport: TNotifyEvent; AProcessMessages: TProc): ITask;
 
 type
@@ -142,7 +152,7 @@ begin
   Result.ExecuteWork;
 end;
 
-procedure TImportCoordinator.DoImportUsingFormat(AFileName: string; AFormat:
+procedure TImportWorker.DoImportUsingFormat(AFileName: string; AFormat:
     TImportFormat; ATask: ITask);
 begin
   var vFileStream := TBufferedFileStream.Create(AFileName, fmOpenRead,
@@ -159,7 +169,7 @@ begin
   end;
 end;
 
-function TImportCoordinator.SelectFormat(AFileName: string; AList: TList<
+function TImportWorker.SelectFormat(AFileName: string; AList: TList<
   TImportFormat>): TImportFormat;
 begin
   Result := nil;
