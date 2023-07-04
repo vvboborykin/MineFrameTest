@@ -38,7 +38,8 @@ uses
   DataImport.ImportResultUnit in 'DataImport\DataImport.ImportResultUnit.pas',
   DataImport.ImportContextUnit in 'DataImport\DataImport.ImportContextUnit.pas',
   DataImport.ImportServiceUnit in 'DataImport\DataImport.ImportServiceUnit.pas',
-  DataImport.ImportFormatUnit in 'DataImport\DataImport.ImportFormatUnit.pas';
+  DataImport.ImportFormatUnit in 'DataImport\DataImport.ImportFormatUnit.pas',
+  DataImport.AsyncContextUnit in 'DataImport\DataImport.AsyncContextUnit.pas';
 
 {$R *.res}
 

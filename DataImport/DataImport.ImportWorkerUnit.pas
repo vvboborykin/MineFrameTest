@@ -12,11 +12,10 @@ interface
 
 uses
   System.Generics.Collections, DataImport.ImportFormatUnit,
-  DataImport.ImportContextUnit, System.SysUtils,
-  System.Classes,
-  System.Variants, System.StrUtils,
-  System.IOUtils, Generics.Collections, Progress.IProgressUnit, Log.ILoggerUnit,
-  System.Threading, DataImport.ImportFormatRegistryUnit;
+  DataImport.ImportContextUnit, System.SysUtils, System.Classes, System.Variants,
+  System.StrUtils, System.IOUtils, Generics.Collections, Progress.IProgressUnit,
+  Log.ILoggerUnit, System.Threading, DataImport.ImportFormatRegistryUnit,
+  DataImport.AsyncContextUnit;
 
 type
   /// <summary>TImportWorker
@@ -31,18 +30,45 @@ type
     procedure DoAfterImport;
     procedure DoProcessMessages;
     function GetFormat(AFileName: string): TImportFormat;
-    procedure DoImportUsingFormat(AFileName: string; AFormat: TImportFormat; ATask:
-        ITask);
-    function SelectFormat(AFileName: string;
-      AList: TList<DataImport.ImportFormatUnit.TImportFormat>): TImportFormat;
+    procedure DoImportUsingFormat(AFileName: string; AFormat: TImportFormat;
+      AsyncContext: IAsyncContext);
+    procedure ExecuteImport(AFileName: string; AsyncContext: IAsyncContext);
+    function SelectFormat(AFileName: string; AList: TList<TImportFormat>):
+      TImportFormat;
   public
+    /// <summary>TImportWorker.ImportFromFileAsync
+    /// Начать операцию импорта в фоновом вычислительном потоке
+    /// </summary>
+    /// <returns> ITask
+    /// </returns>
+    /// <param name="AImportContext"> (TImportContext) Контекст  операции
+    /// импорта</param>
+    /// <param name="AFileName"> (string) Имя файла - источника данных</param>
+    /// <param name="AfterImport"> (TNotifyEvent) Обработчик события окончания
+    /// импорта</param>
+    /// <param name="AProcessMessages"> (TProc) Процедура обработки очережи сообшений
+    /// приложения (вызывается для предотвращения "заморозки" GUI)</param>
     function ImportFromFileAsync(AImportContext: TImportContext; AFileName:
       string; AfterImport: TNotifyEvent; AProcessMessages: TProc): ITask;
+    /// <summary>TImportWorker.ImportFromFileAsync
+    /// Начать операцию импорта в основном вычислительном потоке
+    /// </summary>
+    /// <returns> ITask
+    /// </returns>
+    /// <param name="AImportContext"> (TImportContext) Контекст  операции
+    /// импорта</param>
+    /// <param name="AFileName"> (string) Имя файла - источника данных</param>
+    /// <param name="AfterImport"> (TNotifyEvent) Обработчик события окончания
+    /// импорта</param>
+    /// <param name="AProcessMessages"> (TProc) Процедура обработки очережи сообшений
+    /// приложения (вызывается для предотвращения "заморозки" GUI)</param>
+    procedure ImportFromFile(AImportContext: TImportContext; AFileName: string);
   end;
 
 implementation
 
 resourcestring
+  SATaskAgrumentNOtAssigned = 'Не задан аргумент ATask';
   SImportFromFileStarted = 'Импорт из файла %s начат';
   SImportCompleted = 'Импорт завершен';
   SImportAborted = 'Импорт прерван';
@@ -52,6 +78,30 @@ resourcestring
   SAImportContextParameterIsNil = 'Параметр AImportContext не задан';
   SNotregisteregFormatForExtension =
     'Для расширения файла %s не зарегистрирован формат импорта';
+
+type
+  /// <summary>TTaskAsyncContext
+  /// Прокси для ITask
+  /// </summary>
+  TTaskAsyncContext = class(TInterfacedObject, IAsyncContext)
+  private
+    FTask: ITask;
+    procedure Cancel; stdcall;
+    procedure CheckCancelled; stdcall;
+    function CancellationPengind: Boolean; stdcall;
+  public
+    constructor Create(ATask: ITask);
+  end;
+
+  /// <summary>TNullAsyncContext
+  /// Пустая заглушка для сихронных операций
+  /// </summary>
+  TNullAsyncContext = class(TInterfacedObject, IAsyncContext)
+  strict private
+    procedure Cancel; stdcall;
+    procedure CheckCancelled; stdcall;
+    function CancellationPengind: Boolean; stdcall;
+  end;
 
 procedure TImportWorker.DoAfterImport;
 begin
@@ -95,12 +145,8 @@ end;
 function TImportWorker.ImportFromFileAsync(AImportContext: TImportContext;
   AFileName: string; AfterImport: TNotifyEvent; AProcessMessages: TProc): ITask;
 
-type
-  TAsyncContext = record
-    Task: ITask;
-  end;
 var
-  AsyncContext : TAsyncContext;
+  AsyncContext: TTaskAsyncContext;
 
   procedure ValidateArguments();
   begin
@@ -118,55 +164,84 @@ var
     FAfterImport := AfterImport;
   end;
 
-
 begin
   ValidateArguments();
   StoreArgumentsInFields();
 
-
-
-  AsyncContext.Task := TTask.Create(
+  AsyncContext := TTaskAsyncContext.Create(TTask.Create(
     procedure
     begin
-      try
-        try
-          FContext.Logger.LogInfo(SImportFromFileStarted, [AFileName]);
-          var vFormat := GetFormat(AFileName);
-          DoImportUsingFormat(AFileName, vFormat, AsyncContext.Task);
-          FContext.Logger.LogInfo(SImportCompleted, []);
-        except
-          on E: Exception do
-          begin
-            if E is EOperationCancelled then
-              FContext.Logger.LogInfo(SImportAborted, [])
-            else
-              FContext.Logger.LogError('%s', [E.Message]);
-          end;
-        end;
-      finally
-        DoAfterImport();
-      end;
-    end);
+      ExecuteImport(AFileName, AsyncContext as IAsyncContext);
+    end));
 
-  Result := AsyncContext.Task;
+  Result := AsyncContext.FTask;
   Result.ExecuteWork;
 end;
 
 procedure TImportWorker.DoImportUsingFormat(AFileName: string; AFormat:
-    TImportFormat; ATask: ITask);
+  TImportFormat; AsyncContext: IAsyncContext);
 begin
   var vFileStream := TBufferedFileStream.Create(AFileName, fmOpenRead,
     fmShareDenyWrite);
   try
     var vImportService := AFormat.ImportServiceClass.Create(FContext);
     try
-      vImportService.ImportData(vFileStream, ATask);
+      vImportService.ImportData(vFileStream, AsyncContext);
     finally
       vImportService.Free;
     end;
   finally
     vFileStream.Free;
   end;
+end;
+
+procedure TImportWorker.ExecuteImport(AFileName: string; AsyncContext:
+  IAsyncContext);
+begin
+  try
+    try
+      FContext.Logger.LogInfo(SImportFromFileStarted, [AFileName]);
+      var vFormat := GetFormat(AFileName);
+      DoImportUsingFormat(AFileName, vFormat, AsyncContext);
+      FContext.Logger.LogInfo(SImportCompleted, []);
+    except
+      on E: Exception do
+      begin
+        if E is EOperationCancelled then
+          FContext.Logger.LogInfo(SImportAborted, [])
+        else
+          FContext.Logger.LogError('%s', [E.Message]);
+      end;
+    end;
+  finally
+    DoAfterImport();
+  end;
+end;
+
+procedure TImportWorker.ImportFromFile(AImportContext: TImportContext; AFileName:
+  string);
+var
+  AsyncContext: IAsyncContext;
+
+  procedure ValidateArguments();
+  begin
+    if AImportContext = nil then
+      raise EArgumentException.Create(SAImportContextParameterIsNil);
+
+    if not TFile.Exists(AFileName) then
+      raise EFileNotFoundException.CreateFmt(SFileNotFound, [AFileName]);
+  end;
+
+  procedure StoreArgumentsInFields();
+  begin
+    FContext := AImportContext;
+  end;
+
+begin
+  ValidateArguments();
+  StoreArgumentsInFields();
+  AsyncContext := TNullAsyncContext.Create;
+  ExecuteImport(AFileName, AsyncContext);
 end;
 
 function TImportWorker.SelectFormat(AFileName: string; AList: TList<
@@ -195,4 +270,43 @@ begin
   end;
 end;
 
+constructor TTaskAsyncContext.Create(ATask: ITask);
+begin
+  if ATask = nil then
+    raise EArgumentNilException.Create(SATaskAgrumentNOtAssigned);
+  inherited Create;
+  FTask := ATask;
+end;
+
+procedure TTaskAsyncContext.Cancel;
+begin
+  FTask.Cancel;
+end;
+
+function TTaskAsyncContext.CancellationPengind: Boolean;
+begin
+  Result := FTask.Status = TTaskStatus.Canceled;
+end;
+
+procedure TTaskAsyncContext.CheckCancelled;
+begin
+  FTask.CheckCanceled;
+end;
+
+procedure TNullAsyncContext.Cancel;
+begin
+  // none
+end;
+
+function TNullAsyncContext.CancellationPengind: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TNullAsyncContext.CheckCancelled;
+begin
+  // none
+end;
+
 end.
+

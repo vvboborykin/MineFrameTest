@@ -12,7 +12,7 @@ interface
 
 uses
   System.Threading, System.Classes, DataImport.ImportContextUnit,
-  DataImport.ImportResultUnit;
+  DataImport.ImportResultUnit, DataImport.AsyncContextUnit;
 
 type
   TImportServiceClass = class of TImportService;
@@ -27,7 +27,8 @@ type
     /// <summary>TImportService.ImportData
     /// Загрузить данные из потока в объект результатов
     /// </summary>
-    procedure ImportData(AStream: TStream; ATask: ITask); virtual; abstract;
+    procedure ImportData(AStream: TStream; AAsyncContext: IAsyncContext); virtual;
+        abstract;
     /// <summary>TImportService.ImportContext
     /// Контекст операции импорта
     /// </summary>
