@@ -11,7 +11,8 @@ unit DataImport.ImportFormatUnit;
 interface
 
 uses
-  DataImport.ImportServiceUnit, DataImport.ImportResultUnit,
+  System.SysUtils, System.Classes, System.Variants, System.StrUtils,
+  Log.ILoggerUnit, DataImport.ImportServiceUnit, DataImport.ImportResultUnit,
   DataImport.ImportFormatDetectorUnit;
 
 type
@@ -27,6 +28,14 @@ type
     FImportServiceClass: TImportServiceClass;
     procedure SetFileExtensions(const Value: TArray<string>);
   public
+    /// <summary>TImportFormat.IsValidFormat
+    /// Проверить имеет ли поток данных необходимый формат
+    /// </summary>
+    /// <returns> Boolean
+    /// </returns>
+    /// <param name="AStream"> (TStream) </param>
+    /// <param name="ALogger"> (ILogger) </param>
+    function IsValidFormat(AStream: TStream; ALogger: ILogger): Boolean;
     /// <summary>TImportFormat.DetectorClass
     /// Класс детектора формата
     /// </summary>
@@ -56,6 +65,17 @@ type
   end;
 
 implementation
+
+function TImportFormat.IsValidFormat(AStream: TStream; ALogger: ILogger):
+  Boolean;
+begin
+  var vFormatDetector := DetectorClass.Create(AStream, ALogger);
+  try
+    Result := vFormatDetector.IsValidFormat;
+  finally
+    vFormatDetector.Free;
+  end;
+end;
 
 procedure TImportFormat.SetFileExtensions(const Value: TArray<string>);
 begin

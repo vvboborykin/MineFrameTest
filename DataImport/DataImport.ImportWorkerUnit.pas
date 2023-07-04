@@ -26,7 +26,6 @@ type
     FAfterImport: TNotifyEvent;
     FContext: TImportContext;
     FProcessMessages: TProc;
-    FSourceStream: TStream;
     procedure DoAfterImport;
     procedure DoProcessMessages;
     function GetFormat(AFileName: string): TImportFormat;
@@ -68,7 +67,6 @@ type
 implementation
 
 resourcestring
-  SATaskAgrumentNOtAssigned = 'Не задан аргумент ATask';
   SImportFromFileStarted = 'Импорт из файла %s начат';
   SImportCompleted = 'Импорт завершен';
   SImportAborted = 'Импорт прерван';
@@ -78,30 +76,6 @@ resourcestring
   SAImportContextParameterIsNil = 'Параметр AImportContext не задан';
   SNotregisteregFormatForExtension =
     'Для расширения файла %s не зарегистрирован формат импорта';
-
-type
-  /// <summary>TTaskAsyncContext
-  /// Прокси для ITask
-  /// </summary>
-  TTaskAsyncContext = class(TInterfacedObject, IAsyncContext)
-  private
-    FTask: ITask;
-    procedure Cancel; stdcall;
-    procedure CheckCancelled; stdcall;
-    function CancellationPengind: Boolean; stdcall;
-  public
-    constructor Create(ATask: ITask);
-  end;
-
-  /// <summary>TNullAsyncContext
-  /// Пустая заглушка для сихронных операций
-  /// </summary>
-  TNullAsyncContext = class(TInterfacedObject, IAsyncContext)
-  strict private
-    procedure Cancel; stdcall;
-    procedure CheckCancelled; stdcall;
-    function CancellationPengind: Boolean; stdcall;
-  end;
 
 procedure TImportWorker.DoAfterImport;
 begin
@@ -134,8 +108,10 @@ begin
       raise Exception.CreateFmt(SNotregisteregFormatForExtension, [vFileExt]);
 
     var vFormat := SelectFormat(AFileName, vFormats);
-    if vFormats = nil then
+
+    if vFormat = nil then
       raise Exception.CreateFmt(SInvalidFileData, [AFileName]);
+
     Result := vFormat;
   finally
     vFormats.Free;
@@ -235,6 +211,8 @@ var
   procedure StoreArgumentsInFields();
   begin
     FContext := AImportContext;
+    FAfterImport := nil;
+    FProcessMessages := nil;
   end;
 
 begin
@@ -253,59 +231,16 @@ begin
   try
     for var vFormat in AList do
     begin
-      var vFormatDetector := vFormat.DetectorClass.Create(vFileStream, FContext.Logger);
-      try
-        if vFormatDetector.IsValidFormat then
-        begin
-          Result := vFormat;
-          Break;
-        end;
-      finally
-        vFormatDetector.Free;
+      if vFormat.IsValidFormat(vFileStream, FContext.Logger) then
+      begin
+        Result := vFormat;
+        Break;
       end;
       DoProcessMessages();
     end;
   finally
     vFileStream.Free;
   end;
-end;
-
-constructor TTaskAsyncContext.Create(ATask: ITask);
-begin
-  if ATask = nil then
-    raise EArgumentNilException.Create(SATaskAgrumentNOtAssigned);
-  inherited Create;
-  FTask := ATask;
-end;
-
-procedure TTaskAsyncContext.Cancel;
-begin
-  FTask.Cancel;
-end;
-
-function TTaskAsyncContext.CancellationPengind: Boolean;
-begin
-  Result := FTask.Status = TTaskStatus.Canceled;
-end;
-
-procedure TTaskAsyncContext.CheckCancelled;
-begin
-  FTask.CheckCanceled;
-end;
-
-procedure TNullAsyncContext.Cancel;
-begin
-  // none
-end;
-
-function TNullAsyncContext.CancellationPengind: Boolean;
-begin
-  Result := False;
-end;
-
-procedure TNullAsyncContext.CheckCancelled;
-begin
-  // none
 end;
 
 end.
