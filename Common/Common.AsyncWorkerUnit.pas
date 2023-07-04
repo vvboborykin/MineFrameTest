@@ -1,4 +1,14 @@
-﻿unit Common.AsyncWorkerUnit;
+﻿{*******************************************************
+* Project: MineFrameTest
+* Unit: Common.AsyncWorkerUnit.pas
+* Description: Базовый класс для объектов исполняющих заданную операцию
+*  в фоновом вычислительном потоке
+*  или в основном вычислительном потоке
+*
+* Created: 04.07.2023 22:55:26
+* Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
+*******************************************************}
+unit Common.AsyncWorkerUnit;
 
 interface
 
@@ -8,34 +18,49 @@ uses
   System.Classes, System.Variants, System.StrUtils;
 
 type
+  TAsyncWorkerClass = class of TAsyncWorker;
+
+  /// <summary>TAsyncWorker
+  /// Базовый класс для объектов исполняющих заданную операцию
+  /// в фоновом вычислительном потоке
+  /// или в основном вычислительном потоке
+  /// </summary>
   TAsyncWorker = class abstract
   strict private
+    FContext: TObject;
     FLogger: ILogger;
     FProgress: IProgress;
     FAfterFinish, FProcessMessages: TProc;
     procedure FillNilPararmeters;
     procedure DoAfterFinish;
-    procedure DoProcessMessages;
+    procedure InternalRun;
   strict protected
     /// <summary>TAsyncWorker.ExecureWork
-    /// Выполнить операцию в определённом контексте - определить в наследниках
+    /// Метод выполняющий операцию - переопределить в наследниках
     /// </summary>
     procedure ExecureWork; virtual; abstract;
-    procedure ValidateParameters; virtual;
+    procedure DoProcessMessages;
   public
-    constructor Create(ALogger: ILogger; AProgress: IProgress); virtual;
+    constructor Create(ALogger: ILogger; AProgress: IProgress; AContext: TObject);
     /// <summary>TAsyncWorker<,>.Run
-    /// Провести преобразование
+    /// Выполнить операцию в основном вычислительном потоке
     /// </summary>
     procedure Run;
     /// <summary>TAsyncWorker<,>.RunAsync
-    /// Запустить преобразование в фоновом вычислительном потоке
+    /// Запустить выполнение операции в фоновом вычислительном потоке
     /// </summary>
     /// <returns> ITask
     /// </returns>
-    /// <param name="AfterFinish"> (TProc) </param>
-    /// <param name="ProcessMessages"> (TProc) </param>
+    /// <param name="AfterFinish"> (TProc) Процедура вызываемая
+    /// по окончанию выполнения операции</param>
+    /// <param name="ProcessMessages"> (TProc) Процедура обработки
+    /// очереди сообщений (для предотвращения зависания GUI)</param>
     function RunAsync(AfterFinish, ProcessMessages: TProc): ITask;
+    /// <summary>TAsyncWorker.Context
+    /// Пользовательский контекст выполнения операции
+    /// </summary>
+    /// type:TObject
+    property Context: TObject read FContext;
     /// <summary>TAsyncWorker<,>.Logger
     /// Журнал работы приложения
     /// </summary>
@@ -50,13 +75,18 @@ type
 
 implementation
 
-constructor TAsyncWorker.Create(ALogger: ILogger; AProgress: IProgress);
+resourcestring
+  SConvertionAborted = 'Преобразование прервано';
+
+
+constructor TAsyncWorker.Create(ALogger: ILogger; AProgress: IProgress;
+    AContext: TObject);
 begin
   inherited Create;
   FLogger := ALogger;
   FProgress := AProgress;
+  FContext := AContext;
   FillNilPararmeters();
-  ValidateParameters();
 end;
 
 procedure TAsyncWorker.Run;
@@ -75,7 +105,7 @@ begin
   AsyncContext := TTaskAsyncContext.Create(TTask.Create(
     procedure
     begin
-      ExecureWork;
+      InternalRun();
     end));
   Result := AsyncContext.Task;
   Result.ExecuteWork;
@@ -109,9 +139,23 @@ begin
     FProgress := TNullProgress.Create;
 end;
 
-procedure TAsyncWorker.ValidateParameters;
+procedure TAsyncWorker.InternalRun;
 begin
-  // TODO -cMM: TAsyncWorker.ValidateParameters default body inserted
+  try
+    try
+      ExecureWork;
+    finally
+      DoAfterFinish;
+    end;
+  except
+    on E: Exception do
+    begin
+    if E is EOperationCancelled then
+      Logger.LogInfo(SConvertionAborted, [])
+    else
+      Logger.LogError(E.Message, []);
+    end;
+  end;
 end;
 
 end.

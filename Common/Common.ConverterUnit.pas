@@ -1,7 +1,8 @@
 ﻿{*******************************************************
 * Project: MineFrameTest
 * Unit: ImportConverter.ConverterUnit.pas
-* Description: Дженерик загрузки данных из объекта-источника в объект-приемник данных
+* Description: Дженерик загрузки данных из объекта-источника в
+*  объект-приемник данных
 *
 * Created: 04.07.2023 22:19:40
 * Copyright (C) 2023 Боборыкин В.В. (bpost@yandex.ru)
@@ -24,10 +25,10 @@ type
     FTarget: TTarget;
     FSource: TSource;
   strict protected
-    procedure ValidateParameters1; virtual;
+    procedure ValidateParameters; virtual;
   public
     constructor Create(ALogger: ILogger; AProgress: IProgress; ASource: TSource;
-      ATarget: TTarget);
+        ATarget: TTarget; AContext: TObject);
     /// <summary>TConverter<,>.Target
     /// Объект - источник данных
     /// </summary>
@@ -47,18 +48,17 @@ resourcestring
 
 implementation
 
-uses
-  Log.NullLoggerUnit, Progress.NullProgressUnit;
 
 constructor TConverter<TSource, TTarget>.Create(ALogger: ILogger; AProgress:
-  IProgress; ASource: TSource; ATarget: TTarget);
+    IProgress; ASource: TSource; ATarget: TTarget; AContext: TObject);
 begin
-  inherited Create(ALogger, AProgress);
+  inherited Create(ALogger, AProgress, AContext);
   FSource := ASource;
   FTarget := ATarget;
+  ValidateParameters();
 end;
 
-procedure TConverter<TSource, TTarget>.ValidateParameters1;
+procedure TConverter<TSource, TTarget>.ValidateParameters;
 begin
   if Source = nil then
     raise EArgumentNilException.Create(SSourceIsNil);
