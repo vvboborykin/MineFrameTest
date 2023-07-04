@@ -12,7 +12,7 @@ interface
 
 uses
   System.Threading, System.Classes, DataImport.ImportContextUnit,
-  DataImport.ImportResultUnit, DataImport.AsyncContextUnit;
+  DataImport.ImportResultUnit, Common.AsyncContextUnit;
 
 type
   TImportServiceClass = class of TImportService;

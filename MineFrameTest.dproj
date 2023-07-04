@@ -150,7 +150,9 @@
         <DCCReference Include="DataImport\DataImport.ImportContextUnit.pas"/>
         <DCCReference Include="DataImport\DataImport.ImportServiceUnit.pas"/>
         <DCCReference Include="DataImport\DataImport.ImportFormatUnit.pas"/>
-        <DCCReference Include="DataImport\DataImport.AsyncContextUnit.pas"/>
+        <DCCReference Include="Common\Common.AsyncContextUnit.pas"/>
+        <DCCReference Include="Common\Common.ConverterUnit.pas"/>
+        <DCCReference Include="Common\Common.AsyncWorkerUnit.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
