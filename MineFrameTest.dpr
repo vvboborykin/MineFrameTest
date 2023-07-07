@@ -39,7 +39,9 @@ uses
   DataImport.ImportContextUnit in 'DataImport\DataImport.ImportContextUnit.pas',
   DataImport.ImportServiceUnit in 'DataImport\DataImport.ImportServiceUnit.pas',
   DataImport.ImportFormatUnit in 'DataImport\DataImport.ImportFormatUnit.pas',
-  DataImport.AsyncContextUnit in 'DataImport\DataImport.AsyncContextUnit.pas';
+  Common.AsyncContextUnit in 'Common\Common.AsyncContextUnit.pas',
+  Common.ConverterUnit in 'Common\Common.ConverterUnit.pas',
+  Common.AsyncWorkerUnit in 'Common\Common.AsyncWorkerUnit.pas';
 
 {$R *.res}
 

@@ -15,7 +15,7 @@ uses
   DataImport.ImportContextUnit, System.SysUtils, System.Classes, System.Variants,
   System.StrUtils, System.IOUtils, Generics.Collections, Progress.IProgressUnit,
   Log.ILoggerUnit, System.Threading, DataImport.ImportFormatRegistryUnit,
-  DataImport.AsyncContextUnit;
+  Common.AsyncContextUnit;
 
 type
   /// <summary>TImportWorker
@@ -116,7 +116,7 @@ function TImportWorker.ImportFromFileAsync(AImportContext: TImportContext;
   AFileName: string; AfterImport: TNotifyEvent; AProcessMessages: TProc): ITask;
 
 var
-  AsyncContext: TTaskAsyncContext;
+  AsyncContext: ITaskAsyncContext;
 
   procedure ValidateArguments();
   begin
@@ -144,7 +144,7 @@ begin
       ExecuteImport(AFileName, AsyncContext as IAsyncContext);
     end));
 
-  Result := AsyncContext.FTask;
+  Result := AsyncContext.Task;
   Result.ExecuteWork;
 end;
 
