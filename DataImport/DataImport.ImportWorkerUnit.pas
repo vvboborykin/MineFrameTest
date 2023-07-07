@@ -49,18 +49,12 @@ type
     /// приложения (вызывается для предотвращения "заморозки" GUI)</param>
     function ImportFromFileAsync(AImportContext: TImportContext; AFileName:
       string; AfterImport: TNotifyEvent; AProcessMessages: TProc): ITask;
-    /// <summary>TImportWorker.ImportFromFileAsync
-    /// Начать операцию импорта в основном вычислительном потоке
+    /// <summary>TImportWorker.ImportFromFile
+    /// Провести операцию импорта в основном вычислительном потоке
     /// </summary>
-    /// <returns> ITask
-    /// </returns>
     /// <param name="AImportContext"> (TImportContext) Контекст  операции
     /// импорта</param>
     /// <param name="AFileName"> (string) Имя файла - источника данных</param>
-    /// <param name="AfterImport"> (TNotifyEvent) Обработчик события окончания
-    /// импорта</param>
-    /// <param name="AProcessMessages"> (TProc) Процедура обработки очережи сообшений
-    /// приложения (вызывается для предотвращения "заморозки" GUI)</param>
     procedure ImportFromFile(AImportContext: TImportContext; AFileName: string);
   end;
 
